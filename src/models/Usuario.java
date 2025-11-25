@@ -42,4 +42,18 @@ public abstract class Usuario {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    @Override
+    public String toString() {
+        String res = "";
+        res += "Usuario: " + getNome() + "\n";
+        res += "-------------------------------------" + "\n";
+        res += "Id: " + getId() + "\n";
+        res += "CPF: " + getCpf() + "\n";
+        res += "Email: " + getEmail() + "\n";
+        res += "--------------------------------------" + "\n";
+
+        return res;
+    }
+
 }
