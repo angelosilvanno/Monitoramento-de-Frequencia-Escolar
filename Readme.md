@@ -1,4 +1,4 @@
-# Nome do Projeto
+#  Monitoramento de Frequência  Escolar 
 
 Uma breve descrição do projeto aqui.
 
@@ -10,3 +10,4 @@ Coloque aqui as instruções e quais são os objetivos desse projeto, funcionali
 
 
 ## 👷 Autores
+
