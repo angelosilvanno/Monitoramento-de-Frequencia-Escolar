@@ -46,8 +46,6 @@ Oferecer uma forma automatizada e confiável de registrar frequência e mostrar 
 
 ## 📦 Tecnologias
 
-O documento original não especifica quais tecnologias foram usadas. O projeto foi desenvolvido dentro da disciplina **PEX0130 – Programação Orientada a Objetos**.
-
 Diagrama de classes:
 `https://lucid.app/lucidchart/c484e7ff-9d5e-45c5-9c5b-17d9106637d1/edit?invitationId=invf36d887c-1a8b-4ddb-8638-363a810a37b9&page=HWEp-vi-RSFO#`
 
@@ -59,6 +57,7 @@ Projeto desenvolvido pela equipe da **UFERSA – Campus Pau dos Ferros**:
 * João Pedro da Silva Rodrigues
 * Anailton Arthur Fernandes
 * Ângelo Silvano da Silva
+
 
 
 
