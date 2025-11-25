@@ -28,6 +28,7 @@ public class Turma {
    @Override
     public String toString() {
         String res = "";
+        res += "==========================================\n";
         res += "id " + getIdTurma() + "\n";
         res += "nome da turma " + getNomeTurma() + "\n";
         res += "==========================================\n";
