@@ -1,4 +1,4 @@
-package Usuario;
+package models;
 
 public abstract class Usuario {
     protected int idUsuario;
@@ -31,6 +31,10 @@ public abstract class Usuario {
         return email;
     }
 
+    public String getSenha(){
+        return senha;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -43,15 +47,19 @@ public abstract class Usuario {
         this.email = email;
     }
 
+    public void setSenha(String senha){
+        this.senha = senha;
+    }
+
     @Override
     public String toString() {
         String res = "";
         res += "Usuario: " + getNome() + "\n";
-        res += "-------------------------------------" + "\n";
+        res += "==========================================\n";
         res += "Id: " + getId() + "\n";
         res += "CPF: " + getCpf() + "\n";
         res += "Email: " + getEmail() + "\n";
-        res += "--------------------------------------" + "\n";
+        res += "==========================================\n";
 
         return res;
     }
