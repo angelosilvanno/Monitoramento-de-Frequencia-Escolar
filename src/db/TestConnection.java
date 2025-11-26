@@ -8,36 +8,45 @@ import com.mongodb.ServerApiVersion;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+
 import org.bson.Document;
+
+import utils.EnvReader;
 
 public class TestConnection {
 
     public static void main(String[] args) {
 
-        // 🔴 Coloque sua senha aqui:
-        String connectionString = 
+        // pegar URI do .env
+        String connectionString = EnvReader.get("MONGO_URI");
+
+        if (connectionString == null || connectionString.isEmpty()) {
+            System.out.println("❌ ERRO: MONGO_URI não encontrada no .env");
+            return;
+        }
+
         try {
-            // Versão da API do MongoDB Atlas
+            // Versão da API
             ServerApi serverApi = ServerApi.builder()
                     .version(ServerApiVersion.V1)
                     .build();
 
-            // Configurações do cliente
+            // Config cliente
             MongoClientSettings settings = MongoClientSettings.builder()
                     .applyConnectionString(new ConnectionString(connectionString))
                     .serverApi(serverApi)
                     .build();
 
-            // Criar cliente
+            // Cliente
             MongoClient mongoClient = MongoClients.create(settings);
 
-            // Conectar no banco (admin para o ping)
+            // Banco admin
             MongoDatabase database = mongoClient.getDatabase("admin");
 
             // Comando ping
             database.runCommand(new Document("ping", 1));
 
-            System.out.println("✅ Conexão bem sucedida com o MongoDB Atlas!");
+            System.out.println("✅ Conexão bem-sucedida com o MongoDB Atlas!");
 
         } catch (MongoException e) {
             System.out.println("❌ Erro ao conectar ao MongoDB:");
