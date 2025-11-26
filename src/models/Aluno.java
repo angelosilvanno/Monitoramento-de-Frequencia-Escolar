@@ -26,16 +26,17 @@ public void setNomeResp(String nomeResp){
     this.nomeResp = nomeResp;
 }
 
-public String toString(){
+public String toString() {
     String res = "";
-     res += "       Aluno       \n";
-        res += "=========================\n";
-        res += "id: " + getId() + "\n";
-        res += "Nome: " + getNome() + "\n";
-        res += "cpf: " + getCpf() + "\n";
-        res += "Email: " + getEmail() + "\n";
-        res += "=========================";
-
+    res += "       Aluno       \n";
+    res += "=========================\n";
+    res += "ID: " + getId() + "\n";
+    res += "Nome: " + getNome() + "\n";
+    res += "CPF: " + getCpf() + "\n";
+    res += "Email: " + getEmail() + "\n";
+    res += "Matrícula: " + getMatricula() + "\n";
+    res += "Responsável: " + getNomeResp() + "\n";
+    res += "=========================";
     return res;
 }
 }
