@@ -42,7 +42,7 @@ public class TurmaDAO {
     }
 
     // ============================================================
-    //                  BUSCAR POR MATRÍCULA 
+    //                  BUSCAR POR ID
     // ============================================================
     public static Turma buscarTurma(int idTurma) {
         Document doc = collection.find(Filters.eq("idTurma", idTurma)).first();
@@ -96,19 +96,40 @@ public class TurmaDAO {
     // ============================================================
     //                      VISUALIZAR TURMA 
     // ============================================================
-    public void visualizarTurma(int id) {
+    public void visualizarTurma(int idTurma) {
 
-        Turma turma = buscarTurma(id);
+        Document turmaDoc = collection.find(Filters.eq("idTurma", idTurma)).first();
 
-        if (turma == null) {
+        if (turmaDoc == null) {
             System.out.println("Turma não encontrada!");
             return;
         }
 
-        System.out.println("\n===== Dados da Turma =====");
-        System.out.println("ID Turma: " + turma.getIdTurma());
-        System.out.println("Nome: " + turma.getNomeTurma());
-        System.out.println("==========================\n");
+        System.out.println("====================================");
+        System.out.println("ID: " + turmaDoc.getInteger("idTurma"));
+        System.out.println("Nome: " + turmaDoc.getString("nomeTurma"));
+        System.out.println("====================================");
+
+        List<Integer> matriculas = turmaDoc.getList("alunos", Integer.class);
+
+        if (matriculas == null || matriculas.isEmpty()) {
+            System.out.println("Nenhum aluno cadastrado nessa turma.");
+            return;
+        }
+
+        System.out.println("Alunos da Turma:");
+
+        AlunoDAO alunoDAO = new AlunoDAO();
+
+        for (Integer m : matriculas) {
+            Aluno a = alunoDAO.buscarAluno(m);
+
+            if (a != null) {
+                System.out.println("- " + a.getNome() + " (Matrícula: " + m + ")");
+            } else {
+                System.out.println("- (Aluno não encontrado no DB) Matrícula: " + m);
+            }
+        }
     }
 
     // ============================================================
@@ -116,8 +137,7 @@ public class TurmaDAO {
     // ============================================================
     public void adicionarAluno(int idTurma, Aluno aluno) {
 
-        Document update = new Document("$push",
-                new Document("alunos", aluno.getMatricula()));
+        Document update = new Document("$push", new Document("alunos", aluno.getMatricula()));
 
         collection.updateOne(Filters.eq("idTurma", idTurma), update);
 
@@ -147,4 +167,5 @@ public class TurmaDAO {
                 doc.getString("nomeTurma")
         );
     }
+    
 }

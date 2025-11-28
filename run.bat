@@ -17,8 +17,11 @@ src\models\Professor.java ^
 src\dao\MongoConnection.java ^
 src\dao\AlunoDAO.java ^
 src\dao\TurmaDAO.java ^
+src\dao\ProfessorDAO.java ^
 src\dao\TestAlunoDAO.java ^
-src\dao\TestTurmaDAO.java
+src\dao\TestTurmaDAO.java ^
+src\views\TurmaView.java ^
+src\Main.java
 
 if errorlevel 1 (
     echo.
@@ -32,7 +35,7 @@ echo Execucao iniciada...
 echo.
 
 rem Executar a classe principal de testes
-java -cp "libs/*;bin" dao.TestAlunoDAO
+java -cp "libs/*;bin" src.Main
 
 echo.
 pause
