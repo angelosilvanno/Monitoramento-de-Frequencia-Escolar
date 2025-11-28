@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.MongoCursor;
 
 import models.Frequencia;
 import org.bson.Document;
@@ -13,13 +14,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class FrequenciaDAO {
 
     private MongoCollection<Document> collection;
     private String nomeColecao = "frequencias"; 
     private String nomeBanco = "escola";     
-
 
     public FrequenciaDAO() {
         MongoDatabase db = MongoConnection.getDatabase(nomeBanco);
@@ -46,14 +45,8 @@ public class FrequenciaDAO {
         }
     }
 
-    // ============================================================
-    // BUSCAR POR ID
-    // ============================================================
-    
-    public Frequencia buscarFrequencia(int idFrequencia) {
-        Document doc = collection.find(Filters.eq("idFrequencia", idFrequencia)).first();
-        if (doc == null) return null;
-        return documentToFrequencia(doc);
+    public static void criarFrequenciaStatic(Frequencia frequencia) {
+        new FrequenciaDAO().criarFrequencia(frequencia);
     }
 
     // ============================================================
@@ -75,20 +68,50 @@ public class FrequenciaDAO {
         System.out.println("Registro de Frequência atualizado com sucesso!");
     }
 
+    public static void editarFrequenciaStatic(Frequencia frequenciaAtualizada) {
+        new FrequenciaDAO().editarFrequencia(frequenciaAtualizada);
+    }
+
     // ============================================================
-    // LISTAR TODOS
+    // LISTAR FREQUÊNCIA POR ALUNO
     // ============================================================
     
-    public List<Frequencia> listarTodos() {
+    public List<Frequencia> listarFrequenciaAluno(int idAluno) {
         List<Frequencia> frequencias = new ArrayList<>();
-        try {
-            for (Document doc : collection.find()) {
-                frequencias.add(documentToFrequencia(doc));
+        Bson filter = Filters.eq("idAluno", idAluno);
+        try (MongoCursor<Document> cursor = collection.find(filter).iterator()) {
+            while (cursor.hasNext()) {
+                frequencias.add(documentToFrequencia(cursor.next()));
             }
         } catch (Exception e) {
-            System.err.println("Erro ao listar registros de frequência: " + e.getMessage());
+            System.err.println("Erro ao listar registros do aluno: " + e.getMessage());
         }
         return frequencias;
+    }
+
+    public static List<Frequencia> listarFrequenciaAlunoStatic(int idAluno) {
+        return new FrequenciaDAO().listarFrequenciaAluno(idAluno);
+    }
+
+    // ============================================================
+    // LISTAR FREQUÊNCIA POR TURMA
+    // ============================================================
+    
+    public List<Frequencia> listarFrequenciaTurma(int idTurma) {
+        List<Frequencia> frequencias = new ArrayList<>();
+        Bson filter = Filters.eq("idTurma", idTurma);
+        try (MongoCursor<Document> cursor = collection.find(filter).iterator()) {
+            while (cursor.hasNext()) {
+                frequencias.add(documentToFrequencia(cursor.next()));
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao listar registros da turma: " + e.getMessage());
+        }
+        return frequencias;
+    }
+
+    public static List<Frequencia> listarFrequenciaTurmaStatic(int idTurma) {
+        return new FrequenciaDAO().listarFrequenciaTurma(idTurma);
     }
 
     // ============================================================
@@ -100,8 +123,12 @@ public class FrequenciaDAO {
         System.out.println("Registro de Frequência removido do MongoDB!");
     }
 
+    public static void excluirFrequenciaStatic(int idFrequencia) {
+        new FrequenciaDAO().excluirFrequencia(idFrequencia);
+    }
+
     // ============================================================
-    // DOCUMENTO PARA REGISTRAR FREQUÊNCIA 
+    // CONVERSÃO DOCUMENTO PARA OBJETO
     // ============================================================
     
     private Frequencia documentToFrequencia(Document doc) {
