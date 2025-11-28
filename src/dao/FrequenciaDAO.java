@@ -30,7 +30,7 @@ public class FrequenciaDAO {
     // CRIAR REGISTRO DE FREQUÊNCIA
     // ============================================================
     
-    public void criarFrequencia(Frequencia frequencia) {
+    public static void criarFrequencia(Frequencia frequencia) {
         try {
             Document doc = new Document()
                     .append("idFrequencia", frequencia.getIdFrequencia()) 
@@ -50,7 +50,7 @@ public class FrequenciaDAO {
     // BUSCAR POR ID
     // ============================================================
     
-    public Frequencia buscarFrequencia(int idFrequencia) {
+    public static Frequencia buscarFrequencia(int idFrequencia) {
         Document doc = collection.find(Filters.eq("idFrequencia", idFrequencia)).first();
         if (doc == null) return null;
         return documentToFrequencia(doc);

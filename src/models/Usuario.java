@@ -35,6 +35,10 @@ public abstract class Usuario {
         return senha;
     }
 
+    public void setId(int idUsuario) {     
+        this.idUsuario = idUsuario;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
     }

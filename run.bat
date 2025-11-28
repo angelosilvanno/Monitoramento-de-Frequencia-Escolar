@@ -21,8 +21,8 @@ src\dao\ProfessorDAO.java ^
 src\dao\TestAlunoDAO.java ^
 src\dao\TestTurmaDAO.java ^
 src\views\TurmaView.java ^
-src\Main.java
-
+src\views\AlunoView.java ^
+src\Main.java 
 if errorlevel 1 (
     echo.
     echo ERRO NA COMPILACAO!

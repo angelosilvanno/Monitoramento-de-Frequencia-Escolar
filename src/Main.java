@@ -2,6 +2,7 @@ package src;
 
 import java.util.Scanner;
 import views.TurmaView;
+import views.AlunoView;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,14 +12,23 @@ public class Main {
         while (true) {
             System.out.println("\n=== MENU PRINCIPAL ===");
             System.out.println("1. Gerenciar Turmas");
-            System.out.println("2. Sair");
+            System.out.println("2. Gerenciar Alunos");
+            System.out.println("3. Sair");
             System.out.print("-> ");
 
-            int op = Integer.parseInt(sc.nextLine());
+            int op;
+
+            try {
+                op = Integer.parseInt(sc.nextLine());
+            } catch (Exception e) {
+                System.out.println("Opção inválida!");
+                continue;
+            }
 
             switch (op) {
                 case 1 -> TurmaView.gerenciarTurmas();
-                case 2 -> {
+                case 2 -> AlunoView.gerenciarAlunos();
+                case 3 -> {
                     System.out.println("Encerrando...");
                     return;
                 }
