@@ -9,8 +9,6 @@ import models.Aluno;
 import models.Professor;
 import models.Turma;
 
-//Fazer o metodo de adcionar o professor a turma, e fazer ele aparecer na visualização da turma 
-
 public class TurmaView {
 
     public static void gerenciarTurmas() {
@@ -19,7 +17,6 @@ public class TurmaView {
         TurmaDAO turmaDAO = new TurmaDAO();
         AlunoDAO alunoDAO = new AlunoDAO();
         ProfessorDAO professorDAO = new ProfessorDAO();
-
 
         boolean run = true;
 

@@ -105,4 +105,8 @@ public class ProfessorDAO {
                 doc.getBoolean("coordenador", false)
         );
     }
+
+    public boolean professorExiste(String numeroCNDB) {
+        return collection.find(Filters.eq("numeroCNDB", numeroCNDB)).first() != null;
+    }
 }

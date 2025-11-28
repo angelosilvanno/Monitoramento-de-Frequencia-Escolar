@@ -14,7 +14,14 @@ import com.mongodb.client.FindIterable;
 import java.util.ArrayList;
 import java.util.List;
 
-// Cria e lista foi os unicos testados 
+/*
+    tratativas
+        criar turma                             feito
+        adicionar aluno a turma                 feito
+        adcionar o mais de um prof na turma     feito             
+
+*/
+
 public class TurmaDAO {
 
     private static MongoCollection<Document> collection;
@@ -28,15 +35,22 @@ public class TurmaDAO {
     //                      CRIAR TURMA 
     // ============================================================
     public static Turma criarTurma(int idTurma, String nomeTurma) {
+        
+        TurmaDAO dao = new TurmaDAO();
 
-        Document doc = new Document()
-                .append("idTurma", idTurma )
-                .append("nomeTurma", nomeTurma)
-                .append("alunos", new ArrayList<>())
-                .append("professor", null);
+        if (dao.turmaExiste(idTurma)) {
+            System.out.println("ERRO: Já existe uma turma com esse ID!");
+            return null;
+        } else {
+            Document doc = new Document()
+                    .append("idTurma", idTurma )
+                    .append("nomeTurma", nomeTurma)
+                    .append("alunos", new ArrayList<>())
+                    .append("professor", null);
 
-        collection.insertOne(doc);
-        System.out.println("Turma criada no MongoDB!");
+            collection.insertOne(doc);
+            System.out.println("Turma criada no MongoDB!");
+        }
 
         return new Turma(idTurma, nomeTurma);
     }
@@ -121,7 +135,7 @@ public class TurmaDAO {
             } else {
                 System.out.println("Professor: (Professor não encontrado no DB) CNDB: " + numeroCNDB);
             }
-            
+
         } else {
             System.out.println("Nenhum professor atribuído.");
         }
@@ -155,6 +169,20 @@ public class TurmaDAO {
     // ============================================================
     public void adicionarAluno(int idTurma, Aluno aluno) {
 
+        Document turmaDoc = collection.find(Filters.eq("idTurma", idTurma)).first();
+
+        if (turmaDoc == null) {
+            System.out.println("Turma não encontrada!");
+            return;
+        }
+
+        List<Integer> alunos = turmaDoc.getList("alunos", Integer.class);
+
+        if (alunos.contains(aluno.getMatricula())) {
+            System.out.println("ERRO: Este aluno já está na turma!");
+            return;
+        }
+
         Document update = new Document("$push", new Document("alunos", aluno.getMatricula()));
 
         collection.updateOne(Filters.eq("idTurma", idTurma), update);
@@ -166,6 +194,27 @@ public class TurmaDAO {
     //                  ATRIBUIR PROFESSOR 
     // ============================================================
     public void atribuirProfessor(int idTurma, Professor professor) {
+
+        Document turmaDoc = collection.find(Filters.eq("idTurma", idTurma)).first();
+
+        if (turmaDoc == null) {
+            System.out.println("Turma não encontrada!");
+            return;
+        }
+
+        String professorAtual = turmaDoc.getString("professor");
+
+        if (professorAtual != null && !professorAtual.isEmpty()) {
+            System.out.println("Essa turma já possui um professor atribuído (CNDB: " + professorAtual + ")");
+            return;
+        }
+
+        Document outraTurma = collection.find(Filters.eq("professor", professor.getNumeroCNDB())).first();
+
+        if (outraTurma != null) {
+            System.out.println("Este professor já está atribuído à turma ID: " + outraTurma.getInteger("idTurma"));
+            return;
+        }
 
         Document update = new Document("$set", new Document("professor", professor.getNumeroCNDB()));
 
@@ -186,4 +235,8 @@ public class TurmaDAO {
         );
     }
     
+    public boolean turmaExiste(int idTurma) {
+        return collection.find(Filters.eq("idTurma", idTurma)).first() != null;
+    }
+
 }
