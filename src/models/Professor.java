@@ -28,6 +28,10 @@ public class Professor extends Usuario {
         this.coordenador = coordenador;
     }
 
+    public boolean ehCoordenador() {
+        return this.coordenador;
+    }
+
     public String toString() {
         String res = "";
         res += super.toString();
