@@ -32,7 +32,7 @@ echo Execucao iniciada...
 echo.
 
 rem Executar a classe principal de testes
-java -cp "libs/*;bin" dao.TestTurmaDAO
+java -cp "libs/*;bin" dao.TestAlunoDAO
 
 echo.
 pause

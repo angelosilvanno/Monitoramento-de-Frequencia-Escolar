@@ -1,17 +1,17 @@
 package models;
 
 public class Aluno extends Usuario {
-    private int matricula;
+    private int matriculaAluno;
     private String nomeResp;
     public Aluno(int idUsuario, String nome,String cpf, String email, String senha, int matricula, String nomeResp){
         super(idUsuario,nome, cpf, email, senha);
 
-        this.matricula = matricula;
+        this.matriculaAluno = matricula;
         this.nomeResp = nomeResp;
     }
 
 public int getMatricula(){
-    return matricula;
+    return matriculaAluno;
 }
 
 public String getNomeResp(){
@@ -19,7 +19,7 @@ public String getNomeResp(){
 }
 
 public void setMatricula( int matricula){
-    this.matricula = matricula;
+    this.matriculaAluno = matricula;
 }
 
 public void setNomeResp(String nomeResp){

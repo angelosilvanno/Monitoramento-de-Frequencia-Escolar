@@ -2,26 +2,26 @@ package dao;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-
 import models.Aluno;
-
 import org.bson.Document;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.FindIterable;
 
 public class AlunoDAO {
 
-    private MongoCollection<Document> collection;
+    private static MongoCollection<Document> collection;
 
-    public AlunoDAO() {
+   
+    static {
         MongoDatabase db = MongoConnection.getDatabase("escola");
-        this.collection = db.getCollection("alunos");
+        collection = db.getCollection("alunos");
     }
 
     // ============================================================
-    // CRIAR ALUNO (equivalente ao criarFuncionario)
+    // CRIAR ALUNO
     // ============================================================
-    public void criarAluno(Aluno aluno) {
+    public static void criarAluno(Aluno aluno) {
+
         Document doc = new Document()
                 .append("idUsuario", aluno.getId())
                 .append("nome", aluno.getNome())
@@ -36,11 +36,11 @@ public class AlunoDAO {
     }
 
     // ============================================================
-    // BUSCAR POR MATRÍCULA (UML pede buscarAluno)
+    // BUSCAR POR MATRÍCULA
     // ============================================================
-    public Aluno buscarAluno(int matricula) {
+    public static Aluno buscarAluno(int matriculaAluno) {
 
-        Document doc = collection.find(Filters.eq("matricula", matricula)).first();
+        Document doc = collection.find(Filters.eq("matricula", matriculaAluno)).first();
 
         if (doc == null) return null;
 
@@ -48,21 +48,9 @@ public class AlunoDAO {
     }
 
     // ============================================================
-    // BUSCAR POR ID DE USUÁRIO (como já tinha no seu código)
+    // EDITAR ALUNO
     // ============================================================
-    public Aluno buscarPorId(int idUsuario) {
-
-        Document doc = collection.find(Filters.eq("idUsuario", idUsuario)).first();
-
-        if (doc == null) return null;
-
-        return documentToAluno(doc);
-    }
-
-    // ============================================================
-    // EDITAR ALUNO (equivalente ao atualizarFuncionario)
-    // ============================================================
-    public void editarAluno(Aluno alunoAtualizado) {
+    public static void editarAluno(Aluno alunoAtualizado) {
 
         Document update = new Document("$set", new Document()
                 .append("nome", alunoAtualizado.getNome())
@@ -82,9 +70,9 @@ public class AlunoDAO {
     }
 
     // ============================================================
-    // LISTAR TODOS OS ALUNOS (igual listarFuncionarios)
+    // LISTAR ALUNOS
     // ============================================================
-    public void listarTodos() {
+    public static void listarAlunos() {
 
         FindIterable<Document> docs = collection.find();
 
@@ -94,18 +82,18 @@ public class AlunoDAO {
     }
 
     // ============================================================
-    // EXCLUIR ALUNO (equivalente ao removerFuncionario)
+    // EXCLUIR ALUNO
     // ============================================================
-    public void excluirAluno(int matricula) {
+    public static void excluirAluno(int matriculaAluno) {
 
-        collection.deleteOne(Filters.eq("matricula", matricula));
+        collection.deleteOne(Filters.eq("matricula", matriculaAluno));
         System.out.println("Aluno removido do MongoDB!");
     }
 
     // ============================================================
-    // VISUALIZAR ALUNO (igual visualizarFuncionario)
+    // VISUALIZAR ALUNO
     // ============================================================
-    public void visualizarAluno(int matricula) {
+    public static void visualizarAluno(int matricula) {
 
         Aluno aluno = buscarAluno(matricula);
 
@@ -125,11 +113,10 @@ public class AlunoDAO {
         System.out.println("==========================\n");
     }
 
-
     // ============================================================
-    // DOCUMENT → ALUNO
+    // DOCUMENT → ALUNO (agora static)
     // ============================================================
-    private Aluno documentToAluno(Document doc) {
+    private static Aluno documentToAluno(Document doc) {
 
         return new Aluno(
                 doc.getInteger("idUsuario"),

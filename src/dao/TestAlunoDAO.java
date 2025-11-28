@@ -3,11 +3,9 @@ package dao;
 import models.Aluno;
 
 public class TestAlunoDAO {
+
     public static void main(String[] args) {
 
-        AlunoDAO dao = new AlunoDAO();
-
-        // Criando aluno
         Aluno aluno = new Aluno(
                 1,
                 "Maria Silva",
@@ -18,28 +16,20 @@ public class TestAlunoDAO {
                 "João Silva"
         );
 
-        System.out.println("\n=== Criando aluno ===");
-        dao.criarAluno(aluno);
+        // Criar aluno
+        AlunoDAO.criarAluno(aluno);
 
-        System.out.println("\n=== Buscando por matrícula ===");
-        Aluno buscado = dao.buscarAluno(20250101);
-        System.out.println(buscado);
+        // Buscar aluno por matrícula
+        System.out.println("\n=== Buscando aluno por matrícula ===");
+        Aluno a1 = AlunoDAO.buscarAluno(20250101);
+        System.out.println(a1);
 
-        System.out.println("\n=== Buscando por ID ===");
-        Aluno buscaId = dao.buscarPorId(1);
-        System.out.println(buscaId);
-
+        // Listar todos
         System.out.println("\n=== Listando todos ===");
-        dao.listarTodos();
+        AlunoDAO.listarAlunos();
 
-        System.out.println("\n=== Editando aluno ===");
-        aluno.setNome("Maria Silva Atualizada");
-        dao.editarAluno(aluno);
-
-        System.out.println("\n=== Visualizando aluno ===");
-        dao.visualizarAluno(20250101);
-
-        System.out.println("\n=== Excluindo aluno ===");
-        dao.excluirAluno(20250101);
+        // Excluir um aluno
+        System.out.println("\n=== Excluindo ===");
+        AlunoDAO.excluirAluno(20250101);
     }
 }
