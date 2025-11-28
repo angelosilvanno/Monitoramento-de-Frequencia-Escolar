@@ -22,6 +22,7 @@ src\dao\TestAlunoDAO.java ^
 src\dao\TestTurmaDAO.java ^
 src\views\TurmaView.java ^
 src\views\AlunoView.java ^
+src\views\ProfessorView.java ^
 src\Main.java 
 if errorlevel 1 (
     echo.
