@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.MongoCursor;
 
 import models.Frequencia;
 import org.bson.Document;
@@ -22,6 +23,7 @@ public class FrequenciaDAO {
 
 
     public FrequenciaDAO() {
+        // Assume que MongoConnection está disponível e funcional.
         MongoDatabase db = MongoConnection.getDatabase(nomeBanco);
         this.collection = db.getCollection(nomeColecao);
     }
@@ -47,16 +49,6 @@ public class FrequenciaDAO {
     }
 
     // ============================================================
-    // BUSCAR POR ID
-    // ============================================================
-    
-    public Frequencia buscarFrequencia(int idFrequencia) {
-        Document doc = collection.find(Filters.eq("idFrequencia", idFrequencia)).first();
-        if (doc == null) return null;
-        return documentToFrequencia(doc);
-    }
-
-    // ============================================================
     // EDITAR REGISTRO
     // ============================================================
     
@@ -76,17 +68,35 @@ public class FrequenciaDAO {
     }
 
     // ============================================================
-    // LISTAR TODOS
+    // LISTAR FREQUÊNCIA POR ALUNO
     // ============================================================
     
-    public List<Frequencia> listarTodos() {
+    public List<Frequencia> listarFrequenciaAluno(int idAluno) {
         List<Frequencia> frequencias = new ArrayList<>();
-        try {
-            for (Document doc : collection.find()) {
-                frequencias.add(documentToFrequencia(doc));
+        Bson filter = Filters.eq("idAluno", idAluno);
+        try (MongoCursor<Document> cursor = collection.find(filter).iterator()) {
+            while (cursor.hasNext()) {
+                frequencias.add(documentToFrequencia(cursor.next()));
             }
         } catch (Exception e) {
-            System.err.println("Erro ao listar registros de frequência: " + e.getMessage());
+            System.err.println("Erro ao listar registros do aluno: " + e.getMessage());
+        }
+        return frequencias;
+    }
+
+    // ============================================================
+    // LISTAR FREQUÊNCIA POR TURMA
+    // ============================================================
+    
+    public List<Frequencia> listarFrequenciaTurma(int idTurma) {
+        List<Frequencia> frequencias = new ArrayList<>();
+        Bson filter = Filters.eq("idTurma", idTurma);
+        try (MongoCursor<Document> cursor = collection.find(filter).iterator()) {
+            while (cursor.hasNext()) {
+                frequencias.add(documentToFrequencia(cursor.next()));
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao listar registros da turma: " + e.getMessage());
         }
         return frequencias;
     }
@@ -101,7 +111,7 @@ public class FrequenciaDAO {
     }
 
     // ============================================================
-    // DOCUMENTO PARA REGISTRAR FREQUÊNCIA 
+    // CONVERSÃO DOCUMENTO PARA OBJETO
     // ============================================================
     
     private Frequencia documentToFrequencia(Document doc) {
