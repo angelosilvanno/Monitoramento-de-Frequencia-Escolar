@@ -58,7 +58,7 @@ public class ProfessorDAO {
         System.out.println("Professor atualizado com sucesso!");
     }
 
-    public static void listarTodos() {
+    public static void listarProfessor() {
 
         FindIterable<Document> docs = collection.find();
 
@@ -73,7 +73,7 @@ public class ProfessorDAO {
         System.out.println("Professor removido do MongoDB!");
     }
 
-    public static void visualizarProfessor(String numeroCNDB) {
+    public void visualizarProfessor(String numeroCNDB) {
 
         Professor professor = buscarProfessor(numeroCNDB);
 
