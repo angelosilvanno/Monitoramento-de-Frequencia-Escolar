@@ -3,15 +3,11 @@ package views;
 import dao.AlunoDAO;
 import dao.ProfessorDAO;
 import dao.TurmaDAO;
-import models.Turma;
-
-import models.Turma;
-import models.Aluno;
-import models.Professor;
-
 import java.util.List;
 import java.util.Scanner;
-import javax.sound.sampled.SourceDataLine;
+import models.Aluno;
+import models.Professor;
+import models.Turma;
 
 //Fazer o metodo de adcionar o professor a turma, e fazer ele aparecer na visualização da turma 
 
@@ -66,6 +62,9 @@ public class TurmaView {
                     break;
                 case 6:
                     adicionarAluno(sc, turmaDAO, alunoDAO);
+                    break;
+                case 7: 
+                    atribuirProfessor(sc, turmaDAO, professorDAO);
                     break;
                 case 8:
                     return;
@@ -162,7 +161,9 @@ public class TurmaView {
         }
     }
 
-
+    // ============================================================
+    //                   ADICIONAR ALUNO
+    // ============================================================
     private static void adicionarAluno(Scanner sc, TurmaDAO turmaDAO, AlunoDAO alunoDAO) {
         System.out.println("ID da Turma: ");
         int idTurma = Integer.parseInt(sc.nextLine());
@@ -186,6 +187,33 @@ public class TurmaView {
 
         turmaDAO.adicionarAluno(idTurma, aluno);
         System.out.println("Aluno adicionado com sucesso!");
+    }
+
+    // ============================================================
+    //                   ADICIONAR PROFESSOR
+    // ============================================================
+    private static void atribuirProfessor(Scanner sc, TurmaDAO turmaDAO, ProfessorDAO professorDAO) {
+        System.out.println("ID da Turma: ");
+        int idTurma = Integer.parseInt(sc.nextLine());
+
+        Turma turma = TurmaDAO.buscarTurma(idTurma);
+        if (turma == null) {
+            System.out.println("Turma não encontrada!");
+            return;
+        }
+
+        System.out.println("Número CNDB do Professor: ");
+        String numeroCNDB = sc.nextLine();
+
+        Professor professor = professorDAO.buscarProfessor(numeroCNDB);
+
+        if (professor == null) { 
+            System.out.println("Professor não encontrado!"); 
+            return; 
+        }
+
+        turmaDAO.atribuirProfessor(idTurma, professor);
+        System.out.println("Professor atribuído com sucesso!");
     }
 
 }

@@ -110,6 +110,24 @@ public class TurmaDAO {
         System.out.println("Nome: " + turmaDoc.getString("nomeTurma"));
         System.out.println("====================================");
 
+        String numeroCNDB = turmaDoc.getString("professor");
+
+        if (numeroCNDB != null) {
+            ProfessorDAO professorDAO = new ProfessorDAO();
+            Professor professor = professorDAO.buscarProfessor(numeroCNDB);
+
+            if (professor != null) {
+                System.out.println("Professor: " + professor.getNome() + " (CNDB: " + numeroCNDB + ")");
+            } else {
+                System.out.println("Professor: (Professor não encontrado no DB) CNDB: " + numeroCNDB);
+            }
+            
+        } else {
+            System.out.println("Nenhum professor atribuído.");
+        }
+
+        System.out.println("------------------------------------");
+
         List<Integer> matriculas = turmaDoc.getList("alunos", Integer.class);
 
         if (matriculas == null || matriculas.isEmpty()) {
@@ -149,7 +167,7 @@ public class TurmaDAO {
     // ============================================================
     public void atribuirProfessor(int idTurma, Professor professor) {
 
-        Document update = new Document("$set", new Document("professor", professor.getId()));
+        Document update = new Document("$set", new Document("professor", professor.getNumeroCNDB()));
 
         collection.updateOne(Filters.eq("idTurma", idTurma), update);
 
