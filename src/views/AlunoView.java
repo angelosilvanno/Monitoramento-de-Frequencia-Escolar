@@ -68,6 +68,9 @@ public class AlunoView {
             System.out.print("Nome do Responsável: ");
             String nomeResp = sc.nextLine();
 
+            // 🔥 Removida a linha problemática:
+            // if (AlunoDAO.buscarAlunoPorId(id) != null) { ... }
+
             Aluno aluno = new Aluno(id, nome, cpf, email, senha, matricula, nomeResp);
 
             AlunoDAO.criarAluno(aluno);
