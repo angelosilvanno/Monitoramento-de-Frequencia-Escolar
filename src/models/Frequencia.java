@@ -4,12 +4,16 @@ import java.time.LocalDate;
 
 public class Frequencia {
     private int idFrequencia;
+    private int idAluno;     
+    private int idTurma;     
     private LocalDate dataAula;
     private String statusPresenca;
     private String justificativa;
 
-    public Frequencia( int idFrequencia, LocalDate dataAula, String statusPresenca, String justificativa){
+    public Frequencia(int idFrequencia, int idAluno, int idTurma, LocalDate dataAula, String statusPresenca, String justificativa) {
         this.idFrequencia = idFrequencia;
+        this.idAluno = idAluno;
+        this.idTurma = idTurma;
         this.dataAula = dataAula;
         this.statusPresenca = statusPresenca;
         this.justificativa = justificativa;
@@ -17,6 +21,14 @@ public class Frequencia {
 
     public int getIdFrequencia(){
         return idFrequencia;
+    }
+
+    public int getIdAluno() {
+        return idAluno;
+    }
+
+    public int getIdTurma() {
+        return idTurma;
     }
 
     public LocalDate getDataAula(){
@@ -33,6 +45,14 @@ public class Frequencia {
 
     public void setIdfrequencia( int idFrequencia){
         this.idFrequencia = idFrequencia;
+    }
+    
+    public void setIdAluno(int idAluno) {
+        this.idAluno = idAluno;
+    }
+
+    public void setIdTurma(int idTurma) {
+        this.idTurma = idTurma;
     }
 
     public void setDataAula(LocalDate dataAula){
@@ -51,12 +71,13 @@ public class Frequencia {
     public String toString() {
         String res = "";
         res += "==========================================\n";
-        res += "id " + getIdFrequencia() + "\n";
-        res += " Dia Da Aula: " + getDataAula() + "\n";
-        res += " Status da presenca: " + getStatusPresenca() + "\n";
-        res += " justificativa " + getJustificativa() + "\n";
+        res += "id Frequência: " + getIdFrequencia() + "\n";
+        res += "id Aluno: " + getIdAluno() + "\n";
+        res += "id Turma: " + getIdTurma() + "\n";
+        res += "Dia Da Aula: " + getDataAula() + "\n";
+        res += "Status da presenca: " + getStatusPresenca() + "\n";
+        res += "Justificativa: " + getJustificativa() + "\n";
         res += "==========================================\n";
         return res;
     }
-
 }
