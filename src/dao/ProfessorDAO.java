@@ -2,13 +2,16 @@ package dao;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Filters;
 import models.Professor;
 import org.bson.Document;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.FindIterable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfessorDAO {
-    
+
     private static MongoCollection<Document> collection;
 
     static {
@@ -16,85 +19,102 @@ public class ProfessorDAO {
         collection = db.getCollection("professores");
     }
 
-    public static void criarProfessor(Professor professor) {
+    // -------------------- CRIAR PROFESSOR --------------------=
+    public static Professor criarProfessor(String nome, String cpf, String email, String senha,
+                                           int idUsuario, String numeroCNDB, boolean coordenador) {
+
+        if (buscarProfessor(numeroCNDB) != null) {
+            System.out.println("Já existe um professor com este CNDB!");
+            return null;
+        }
+
         Document doc = new Document()
-                .append("idUsuario", professor.getId())
-                .append("nome", professor.getNome())
-                .append("cpf", professor.getCpf())
-                .append("email", professor.getEmail())
-                .append("senha", professor.getSenha())
-                .append("numeroCNDB", professor.getNumeroCNDB())
-                .append("coordenador", professor.getCoordenador());
+                .append("idUsuario", idUsuario)
+                .append("nome", nome)
+                .append("cpf", cpf)
+                .append("email", email)
+                .append("senha", senha)
+                .append("numeroCNDB", numeroCNDB)
+                .append("coordenador", coordenador);
 
         collection.insertOne(doc);
-        System.out.println("Professor inserido no MongoDB!");
+
+        return new Professor(idUsuario, nome, cpf, email, senha, numeroCNDB, coordenador);
     }
 
+    // -------------------- BUSCAR POR CNDB --------------------
     public static Professor buscarProfessor(String numeroCNDB) {
-
         Document doc = collection.find(Filters.eq("numeroCNDB", numeroCNDB)).first();
-
         if (doc == null) return null;
-
         return documentToProfessor(doc);
     }
 
-    public static void editarProfessor(Professor professorAtualizado) {
+    // -------------------- EDITAR PROFESSOR --------------------
+    public static void editarProfessor(Professor professorAtual, int idUsuario, String nome, String cpf,
+                                       String email, String senha, boolean coordenador, String numeroCNDB) {
 
         Document update = new Document("$set", new Document()
-                .append("nome", professorAtualizado.getNome())
-                .append("cpf", professorAtualizado.getCpf())
-                .append("email", professorAtualizado.getEmail())
-                .append("senha", professorAtualizado.getSenha())
-                .append("numeroCNDB", professorAtualizado.getNumeroCNDB())
-                .append("coordenador", professorAtualizado.getCoordenador())
-                .append("idUsuario", professorAtualizado.getId())
-        );
-        collection.updateOne(
-                Filters.eq("numeroCNDB", professorAtualizado.getNumeroCNDB()),
-                update
+                .append("nome", nome)
+                .append("cpf", cpf)
+                .append("email", email)
+                .append("senha", senha)
+                .append("idUsuario", idUsuario)
+                .append("numeroCNDB", numeroCNDB)
+                .append("coordenador", coordenador)
         );
 
+        collection.updateOne(Filters.eq("numeroCNDB", professorAtual.getNumeroCNDB()), update);
         System.out.println("Professor atualizado com sucesso!");
     }
 
-    public static void listarProfessor() {
-
-        FindIterable<Document> docs = collection.find();
-
-        for (Document d : docs) {
-            System.out.println(d.toJson());
-        }
-    }
-
+    // -------------------- EXCLUIR PROFESSOR --------------------
     public static void excluirProfessor(String numeroCNDB) {
-
         collection.deleteOne(Filters.eq("numeroCNDB", numeroCNDB));
         System.out.println("Professor removido do MongoDB!");
     }
 
-    public void visualizarProfessor(String numeroCNDB) {
+    // -------------------- LISTAR PROFESSORES --------------------=
+    public static List<Professor> listarProfessor() {
+        List<Professor> lista = new ArrayList<>();
+        FindIterable<Document> docs = collection.find();
 
-        Professor professor = buscarProfessor(numeroCNDB);
+        for (Document d : docs) {
+            lista.add(documentToProfessor(d));
+        }
+        return lista;
+    }
 
-        if (professor == null) {
-            System.out.println("Professor não encontrado!");
+    // -------------------- VISUALIZAR PROFESSORES --------------------
+    public void visualizarProfessor() {
+        List<Professor> lista = listarProfessor();
+
+        if (lista.isEmpty()) {
+            System.out.println("Nenhum professor cadastrado!");
             return;
         }
 
-        System.out.println("\n===== Dados do Professor =====");
-        System.out.println("Nome: " + professor.getNome());
-        System.out.println("CPF: " + professor.getCpf());
-        System.out.println("Email: " + professor.getEmail());
-        System.out.println("Senha: " + professor.getSenha());
-        System.out.println("NumeroCNDB: " + professor.getNumeroCNDB());
-        System.out.println("ID Usuário: " + professor.getId());
-        System.out.println("Coordenador: " + professor.getCoordenador());
-        System.out.println("==========================\n");
+        System.out.println("\n===== Lista de Professores =====");
+        for (Professor p : lista) {
+            System.out.println("Nome: " + p.getNome());
+            System.out.println("CPF: " + p.getCpf());
+            System.out.println("Email: " + p.getEmail());
+            System.out.println("ID Usuário: " + p.getId());
+            System.out.println("CNDB: " + p.getNumeroCNDB());
+            System.out.println("Coordenador: " + p.getCoordenador());
+            System.out.println("---------------------------");
+        }
+        System.out.println("==============================\n");
     }
-    
-    private static Professor documentToProfessor(Document doc) {
 
+    // -------------------- VERIFICAR SE É COORDENADOR --------------------
+    public boolean ehCoordenador(String numeroCNDB) {
+        Professor p = buscarProfessor(numeroCNDB);
+        if (p == null) return false;
+        return p.getCoordenador();
+    }
+
+    // -------------------- DOCUMENT PARA PROFESSOR --------------------
+    private static Professor documentToProfessor(Document doc) {
         return new Professor(
                 doc.getInteger("idUsuario"),
                 doc.getString("nome"),
@@ -102,11 +122,7 @@ public class ProfessorDAO {
                 doc.getString("email"),
                 doc.getString("senha"),
                 doc.getString("numeroCNDB"),
-                doc.getBoolean("coordenador", false)
+                doc.getBoolean("coordenador")
         );
-    }
-
-    public boolean professorExiste(String numeroCNDB) {
-        return collection.find(Filters.eq("numeroCNDB", numeroCNDB)).first() != null;
     }
 }
