@@ -14,7 +14,6 @@ public class TurmaView {
     public static void gerenciarTurmas() {
 
         Scanner sc = new Scanner(System.in);
-        TurmaDAO turmaDAO = new TurmaDAO();
         AlunoDAO alunoDAO = new AlunoDAO();
         ProfessorDAO professorDAO = new ProfessorDAO();
 
@@ -42,73 +41,43 @@ public class TurmaView {
             }
 
             switch (opcao) {
-                case 1:
-                    criarTurma(sc, turmaDAO);
-                    break;
-                case 2:
-                    visualizarTurma(sc, turmaDAO);
-                    break;
-                case 3:
-                    atualizarTurma(sc, turmaDAO);
-                    break;
-                case 4:
-                    removerTurma(sc, turmaDAO);
-                    break;
-                case 5:
-                    listarTurmas(turmaDAO);
-                    break;
-                case 6:
-                    adicionarAluno(sc, turmaDAO, alunoDAO);
-                    break;
-                case 7: 
-                    atribuirProfessor(sc, turmaDAO, professorDAO);
-                    break;
-                case 8:
-                    return;
-                default:
-                    System.out.println("Opção inválida!");
+                case 1 -> criarTurma(sc);
+                case 2 -> visualizarTurma(sc);
+                case 3 -> atualizarTurma(sc);
+                case 4 -> removerTurma(sc);
+                case 5 -> listarTurmas();
+                case 6 -> adicionarAluno(sc, alunoDAO);
+                case 7 -> atribuirProfessor(sc, professorDAO);
+                case 8 -> { return; }
+                default -> System.out.println("Opção inválida!");
             }
         }
     }
 
-    // ============================================================
-    //                   CRIAR TURMA
-    // ============================================================
-    private static void criarTurma(Scanner sc, TurmaDAO dao) {
-
+    private static void criarTurma(Scanner sc) {
         System.out.print("ID da Turma: ");
         int id = Integer.parseInt(sc.nextLine());
 
         System.out.print("Nome da Turma: ");
         String nome = sc.nextLine();
 
-        Turma t = dao.criarTurma(id, nome);
-
+        TurmaDAO.criarTurma(id, nome);
         System.out.println("Turma criada com sucesso!");
     }
 
-    // ============================================================
-    //                   VISUALIZAR TURMA
-    // ============================================================
-    private static void visualizarTurma(Scanner sc, TurmaDAO dao) {
-
+    private static void visualizarTurma(Scanner sc) {
         System.out.print("Informe o ID da turma: ");
         int id = Integer.parseInt(sc.nextLine());
 
+        TurmaDAO dao = new TurmaDAO();
         dao.visualizarTurma(id);
-
-        
     }
 
-    // ============================================================
-    //                   ATUALIZAR TURMA
-    // ============================================================
-    private static void atualizarTurma(Scanner sc, TurmaDAO dao) {
-
+    private static void atualizarTurma(Scanner sc) {
         System.out.print("ID da Turma a atualizar: ");
         int idAntigo = Integer.parseInt(sc.nextLine());
 
-        Turma turma = dao.buscarTurma(idAntigo);
+        Turma turma = TurmaDAO.buscarTurma(idAntigo);
 
         if (turma == null) {
             System.out.println("Turma não encontrada!");
@@ -121,32 +90,22 @@ public class TurmaView {
         System.out.print("Novo nome: ");
         String novoNome = sc.nextLine();
 
-        dao.editarTurma(turma, novoId, novoNome);
-
+        TurmaDAO.editarTurma(turma, novoId, novoNome);
         System.out.println("Turma atualizada com sucesso!");
     }
 
-    // ============================================================
-    //                   REMOVER TURMA
-    // ============================================================
-    private static void removerTurma(Scanner sc, TurmaDAO dao) {
-
+    private static void removerTurma(Scanner sc) {
         System.out.print("ID da turma a remover: ");
         int id = Integer.parseInt(sc.nextLine());
 
-        dao.excluirTurma(id);
-
+        TurmaDAO.excluirTurma(id);
         System.out.println("Turma removida com sucesso!");
     }
 
-    // ============================================================
-    //                   LISTAR TURMAS
-    // ============================================================
-    private static void listarTurmas(TurmaDAO dao) {
-
+    private static void listarTurmas() {
         System.out.println("\n=== LISTA DE TURMAS ===");
 
-        List<Turma> turmas = dao.listarTurma();
+        List<Turma> turmas = TurmaDAO.listarTurma();
 
         if (turmas.isEmpty()) {
             System.out.println("Nenhuma turma cadastrada!");
@@ -158,42 +117,39 @@ public class TurmaView {
         }
     }
 
-    // ============================================================
-    //                   ADICIONAR ALUNO
-    // ============================================================
-    private static void adicionarAluno(Scanner sc, TurmaDAO turmaDAO, AlunoDAO alunoDAO) {
+    private static void adicionarAluno(Scanner sc, AlunoDAO alunoDAO) {
         System.out.println("ID da Turma: ");
         int idTurma = Integer.parseInt(sc.nextLine());
 
         Turma turma = TurmaDAO.buscarTurma(idTurma);
-        
+
         if (turma == null) {
             System.out.println("Turma não encontrada!");
             return;
         }
 
-        System.out.print("Matrícula do Aluno: "); 
-        int matricula = Integer.parseInt(sc.nextLine()); 
+        System.out.print("Matrícula do Aluno: ");
+        int matricula = Integer.parseInt(sc.nextLine());
 
-        Aluno aluno = alunoDAO.buscarAluno(matricula);
+        Aluno aluno = AlunoDAO.buscarAluno(matricula);
 
         if (aluno == null) {
             System.out.println("Aluno não encontrado!");
             return;
         }
 
-        turmaDAO.adicionarAluno(idTurma, aluno);
+        TurmaDAO dao = new TurmaDAO();
+        dao.adicionarAluno(idTurma, aluno);
+
         System.out.println("Aluno adicionado com sucesso!");
     }
 
-    // ============================================================
-    //                   ADICIONAR PROFESSOR
-    // ============================================================
-    private static void atribuirProfessor(Scanner sc, TurmaDAO turmaDAO, ProfessorDAO professorDAO) {
+    private static void atribuirProfessor(Scanner sc, ProfessorDAO professorDAO) {
         System.out.println("ID da Turma: ");
         int idTurma = Integer.parseInt(sc.nextLine());
 
         Turma turma = TurmaDAO.buscarTurma(idTurma);
+
         if (turma == null) {
             System.out.println("Turma não encontrada!");
             return;
@@ -202,15 +158,16 @@ public class TurmaView {
         System.out.println("Número CNDB do Professor: ");
         String numeroCNDB = sc.nextLine();
 
-        Professor professor = professorDAO.buscarProfessor(numeroCNDB);
+        Professor professor = ProfessorDAO.buscarProfessor(numeroCNDB);
 
-        if (professor == null) { 
-            System.out.println("Professor não encontrado!"); 
-            return; 
+        if (professor == null) {
+            System.out.println("Professor não encontrado!");
+            return;
         }
 
-        turmaDAO.atribuirProfessor(idTurma, professor);
+        TurmaDAO dao = new TurmaDAO();
+        dao.atribuirProfessor(idTurma, professor);
+
         System.out.println("Professor atribuído com sucesso!");
     }
-
 }
