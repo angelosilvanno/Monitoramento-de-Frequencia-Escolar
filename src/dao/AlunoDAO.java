@@ -2,10 +2,10 @@ package dao;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Filters;
 import models.Aluno;
 import org.bson.Document;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.FindIterable;
 
 public class AlunoDAO {
 
@@ -20,66 +20,53 @@ public class AlunoDAO {
     // VERIFICAÇÕES DE DUPLICIDADE
     // ============================================================
 
-    public static boolean existeAlunoComMatricula(int matricula) {
+    private static boolean existeAlunoComMatricula(int matricula) {
         return collection.find(Filters.eq("matricula", matricula)).first() != null;
     }
 
-    public static boolean existeAlunoComCpf(String cpf) {
+    private static boolean existeAlunoComCpf(String cpf) {
         return collection.find(Filters.eq("cpf", cpf)).first() != null;
     }
 
-    public static boolean existeAlunoComIdUsuario(int idUsuario) {
+    private static boolean existeAlunoComIdUsuario(int idUsuario) {
         return collection.find(Filters.eq("idUsuario", idUsuario)).first() != null;
     }
 
     // ============================================================
-    // CRIAR ALUNO (AGORA COM VALIDAÇÕES)
+    // CRIAR ALUNO
     // ============================================================
 
-    public static void criarAluno(Aluno aluno) {
+    public static Aluno criarAluno(String nome, String cpf, String email, String senha,
+                                   int idUsuario, int matriculaAluno, String nomeResp) {
 
-        // 🔒 VALIDAÇÃO 1 — matrícula duplicada
-        if (existeAlunoComMatricula(aluno.getMatricula())) {
+        // 🔒 VALIDAÇÕES
+        if (existeAlunoComMatricula(matriculaAluno)) {
             System.out.println("❌ ERRO: Já existe um aluno com esta MATRÍCULA!");
-            return;
+            return null;
         }
 
-        // 🔒 VALIDAÇÃO 2 — CPF duplicado
-        if (existeAlunoComCpf(aluno.getCpf())) {
+        if (existeAlunoComCpf(cpf)) {
             System.out.println("❌ ERRO: Já existe um aluno com este CPF!");
-            return;
+            return null;
         }
 
-        // 🔒 VALIDAÇÃO 3 — idUsuario duplicado
-        if (existeAlunoComIdUsuario(aluno.getId())) {
+        if (existeAlunoComIdUsuario(idUsuario)) {
             System.out.println("❌ ERRO: Já existe um usuário com este ID!");
-            return;
+            return null;
         }
 
-        // Se passou pelas validações, salva normalmente
         Document doc = new Document()
-                .append("idUsuario", aluno.getId())
-                .append("nome", aluno.getNome())
-                .append("cpf", aluno.getCpf())
-                .append("email", aluno.getEmail())
-                .append("senha", aluno.getSenha())
-                .append("matricula", aluno.getMatricula())
-                .append("nomeResp", aluno.getNomeResp());
+                .append("idUsuario", idUsuario)
+                .append("nome", nome)
+                .append("cpf", cpf)
+                .append("email", email)
+                .append("senha", senha)
+                .append("matricula", matriculaAluno)
+                .append("nomeResp", nomeResp);
 
         collection.insertOne(doc);
+
         System.out.println("✔️ Aluno inserido no MongoDB!");
-    }
-
-    // ============================================================
-    // BUSCAR POR MATRÍCULA
-    // ============================================================
-
-    public static Aluno buscarAluno(int matriculaAluno) {
-
-        Document doc = collection.find(Filters.eq("matricula", matriculaAluno)).first();
-
-        if (doc == null) return null;
-
         return documentToAluno(doc);
     }
 
@@ -87,36 +74,20 @@ public class AlunoDAO {
     // EDITAR ALUNO
     // ============================================================
 
-    public static void editarAluno(Aluno alunoAtualizado) {
+    public static void editarAluno(int matriculaAluno, int idUsuario, String nome, String cpf, 
+                                   String email, String senha, String nomeResp) {
 
         Document update = new Document("$set", new Document()
-                .append("nome", alunoAtualizado.getNome())
-                .append("cpf", alunoAtualizado.getCpf())
-                .append("email", alunoAtualizado.getEmail())
-                .append("senha", alunoAtualizado.getSenha())
-                .append("nomeResp", alunoAtualizado.getNomeResp())
-                .append("idUsuario", alunoAtualizado.getId())
+                .append("nome", nome)
+                .append("cpf", cpf)
+                .append("email", email)
+                .append("senha", senha)
+                .append("idUsuario", idUsuario)
+                .append("nomeResp", nomeResp)
         );
 
-        collection.updateOne(
-                Filters.eq("matricula", alunoAtualizado.getMatricula()),
-                update
-        );
-
+        collection.updateOne(Filters.eq("matricula", matriculaAluno), update);
         System.out.println("✔️ Aluno atualizado com sucesso!");
-    }
-
-    // ============================================================
-    // LISTAR ALUNOS
-    // ============================================================
-
-    public static void listarAlunos() {
-
-        FindIterable<Document> docs = collection.find();
-
-        for (Document d : docs) {
-            System.out.println(d.toJson());
-        }
     }
 
     // ============================================================
@@ -124,33 +95,51 @@ public class AlunoDAO {
     // ============================================================
 
     public static void excluirAluno(int matriculaAluno) {
-
         collection.deleteOne(Filters.eq("matricula", matriculaAluno));
         System.out.println("✔️ Aluno removido do MongoDB!");
     }
 
     // ============================================================
-    // VISUALIZAR ALUNO
+    // BUSCAR ALUNO
     // ============================================================
 
-    public static void visualizarAluno(int matricula) {
+    public static Aluno buscarAluno(int matriculaAluno) {
+        Document doc = collection.find(Filters.eq("matricula", matriculaAluno)).first();
+        if (doc == null) return null;
+        return documentToAluno(doc);
+    }
 
-        Aluno aluno = buscarAluno(matricula);
+    // ============================================================
+    // LISTAR ALUNOS
+    // ============================================================
 
-        if (aluno == null) {
-            System.out.println("❌ Aluno não encontrado!");
-            return;
+    public static void listarAlunos() {
+        FindIterable<Document> docs = collection.find();
+        for (Document d : docs) {
+            System.out.println(d.toJson());
         }
+    }
 
-        System.out.println("\n===== Dados do Aluno =====");
-        System.out.println("Nome: " + aluno.getNome());
-        System.out.println("CPF: " + aluno.getCpf());
-        System.out.println("Email: " + aluno.getEmail());
-        System.out.println("Senha: " + aluno.getSenha());
-        System.out.println("Matrícula: " + aluno.getMatricula());
-        System.out.println("ID Usuário: " + aluno.getId());
-        System.out.println("Responsável: " + aluno.getNomeResp());
-        System.out.println("==========================\n");
+    // ============================================================
+    // VISUALIZAR ALUNOS FORMATADOS
+    // ============================================================
+
+    public static void visualizarAluno() {
+        FindIterable<Document> docs = collection.find();
+
+        System.out.println("\n===== Lista de Alunos =====");
+        for (Document doc : docs) {
+            Aluno aluno = documentToAluno(doc);
+            System.out.println("Nome: " + aluno.getNome());
+            System.out.println("CPF: " + aluno.getCpf());
+            System.out.println("Email: " + aluno.getEmail());
+            System.out.println("Senha: " + aluno.getSenha());
+            System.out.println("Matrícula: " + aluno.getMatricula());
+            System.out.println("ID Usuário: " + aluno.getId());
+            System.out.println("Responsável: " + aluno.getNomeResp());
+            System.out.println("---------------------------");
+        }
+        System.out.println("===========================\n");
     }
 
     // ============================================================
@@ -158,7 +147,6 @@ public class AlunoDAO {
     // ============================================================
 
     private static Aluno documentToAluno(Document doc) {
-
         return new Aluno(
                 doc.getInteger("idUsuario"),
                 doc.getString("nome"),

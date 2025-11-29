@@ -4,7 +4,7 @@ import java.util.Scanner;
 import views.TurmaView;
 import views.AlunoView;
 import views.ProfessorView;
-import views.FrequenciaView; 
+
 
 public class Main {
     public static void main(String[] args) {
@@ -33,7 +33,6 @@ public class Main {
                 case 1 -> TurmaView.gerenciarTurmas();
                 case 2 -> AlunoView.gerenciarAlunos();
                 case 3 -> ProfessorView.gerenciarProfessor();
-                case 4 -> FrequenciaView.gerenciarFrequencia(); // Chamada ao novo View
                 case 5 -> {
                     System.out.println("Encerrando...");
                     return;

@@ -18,7 +18,6 @@ src\dao\MongoConnection.java ^
 src\dao\AlunoDAO.java ^
 src\dao\TurmaDAO.java ^
 src\dao\ProfessorDAO.java ^
-src\dao\TestAlunoDAO.java ^
 src\dao\TestTurmaDAO.java ^
 src\views\TurmaView.java ^
 src\views\AlunoView.java ^
