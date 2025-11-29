@@ -70,6 +70,18 @@ public class AlunoDAO {
         return documentToAluno(doc);
     }
 
+    public static void criarAluno(Aluno aluno) {
+        criarAluno(
+            aluno.getNome(),
+            aluno.getCpf(),
+            aluno.getEmail(),
+            aluno.getSenha(),
+            aluno.getId(),
+            aluno.getMatricula(),
+            aluno.getNomeResp()  
+        );
+    }
+
     // ============================================================
     // EDITAR ALUNO
     // ============================================================
