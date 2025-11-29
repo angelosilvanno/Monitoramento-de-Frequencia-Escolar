@@ -2,14 +2,10 @@ package dao;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-
 import models.Frequencia;
-
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,158 +17,134 @@ public class FrequenciaDAO {
 
     public FrequenciaDAO() {
         MongoDatabase db = MongoConnection.getDatabase("escola");
-        this.collection = db.getCollection("frequencias");
+        collection = db.getCollection("frequencias");
     }
 
     // ============================================================
     // CRIAR FREQUÊNCIA
     // ============================================================
-    public Frequencia criarFrequencia(int matriculaAluno, int idTurma, int idFrequencia,
-                                      LocalDate dataAula, String statusPresenca) {
+    public Frequencia criarFrequencia(int idAluno, int idTurma, int idFrequencia, LocalDate dataAula, String statusPresenca) {
 
-        // verificar se o ID já existe
-        Document existente = collection.find(Filters.eq("idFrequencia", idFrequencia)).first();
-        if (existente != null) {
-            System.out.println("ERRO: Já existe frequência com este ID!");
+        try {
+            Document doc = new Document()
+                    .append("idFrequencia", idFrequencia)
+                    .append("idAluno", idAluno)
+                    .append("idTurma", idTurma)
+                    .append("dataAula", dataAula.toString())
+                    .append("statusPresenca", statusPresenca)
+                    .append("justificativa", "");
+
+            collection.insertOne(doc);
+
+            return new Frequencia(idFrequencia, idAluno, idTurma, dataAula, statusPresenca, "");
+
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao criar frequência: " + e.getMessage());
             return null;
         }
-
-        Frequencia f = new Frequencia(
-                idFrequencia,
-                matriculaAluno,
-                idTurma,
-                dataAula,
-                statusPresenca,
-                ""
-        );
-
-        Document doc = new Document()
-                .append("idFrequencia", idFrequencia)
-                .append("idAluno", matriculaAluno)
-                .append("idTurma", idTurma)
-                .append("dataAula", dataAula.toString())
-                .append("statusPresenca", statusPresenca)
-                .append("justificativa", "");
-
-        collection.insertOne(doc);
-
-        System.out.println("Frequência criada com sucesso!");
-
-        return f;
     }
 
     // ============================================================
     // EDITAR FREQUÊNCIA
     // ============================================================
-    public void editarFrequencia(int matriculaAluno, int idTurma, int idFrequencia,
-                                 LocalDate dataAula, String statusPresenca) {
+    public void editarFrequencia(Frequencia f, int idAluno, int idTurma, int idFrequencia, LocalDate dataAula, String statusPresenca) {
+        try {
+            Document update = new Document("$set", new Document()
+                    .append("idAluno", idAluno)
+                    .append("idTurma", idTurma)
+                    .append("dataAula", dataAula.toString())
+                    .append("statusPresenca", statusPresenca)
+            );
 
-        Bson filter = Filters.eq("idFrequencia", idFrequencia);
-
-        Bson update = Updates.combine(
-                Updates.set("idAluno", matriculaAluno),
-                Updates.set("idTurma", idTurma),
-                Updates.set("dataAula", dataAula.toString()),
-                Updates.set("statusPresenca", statusPresenca)
-        );
-
-        collection.updateOne(filter, update);
-
-        System.out.println("Frequência atualizada com sucesso!");
+            collection.updateOne(Filters.eq("idFrequencia", idFrequencia), update);
+            System.out.println("✔️ Frequência atualizada!");
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao atualizar frequência: " + e.getMessage());
+        }
     }
 
     // ============================================================
-    // REGISTRAR PRESENÇA (não estático, sem parâmetros)
+    // EXCLUIR FREQUÊNCIA
     // ============================================================
-    public void registrarPresenca() {
+    public void excluirFrequencia(int idFrequencia) {
+        try {
+            collection.deleteOne(Filters.eq("idFrequencia", idFrequencia));
+            System.out.println("✔️ Frequência removida!");
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao excluir frequência: " + e.getMessage());
+        }
+    }
 
-        System.out.println("registrarPresenca() foi chamado, "
-                + "mas é necessário saber qual ID de frequência atualizar.");
+    // ============================================================
+    // LISTAR FREQUÊNCIA DE UM ALUNO
+    // ============================================================
+    public List<Frequencia> listarFrequenciaAluno(int idAluno) {
+        List<Frequencia> lista = new ArrayList<>();
+        FindIterable<Document> docs = collection.find(Filters.eq("idAluno", idAluno));
 
-        // ⚠️ Aqui deixo pronto para você completar:
-        // collection.updateOne(Filters.eq("idFrequencia", ???), Updates.set("statusPresenca", "PRESENTE"));
+        for (Document d : docs) {
+            lista.add(documentToFrequencia(d));
+        }
 
-        // Você decide como quer que o método saiba qual frequência alterar.
+        return lista;
+    }
+
+    // ============================================================
+    // LISTAR FREQUÊNCIA DE UMA TURMA
+    // ============================================================
+    public List<Frequencia> listarFrequenciaTurma(int idTurma) {
+        List<Frequencia> lista = new ArrayList<>();
+        FindIterable<Document> docs = collection.find(Filters.eq("idTurma", idTurma));
+
+        for (Document d : docs) {
+            lista.add(documentToFrequencia(d));
+        }
+
+        return lista;
+    }
+
+    // ============================================================
+    // REGISTRAR PRESENÇA
+    // ============================================================
+    public void registrarPresenca(int idFrequencia, String statusPresenca) {
+        try {
+            collection.updateOne(Filters.eq("idFrequencia", idFrequencia),
+                    new Document("$set", new Document("statusPresenca", statusPresenca)));
+            System.out.println("✔️ Presença registrada!");
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao registrar presença: " + e.getMessage());
+        }
     }
 
     // ============================================================
     // JUSTIFICAR FALTA
     // ============================================================
     public void justificarFalta(int idFrequencia, String texto) {
-
-        collection.updateOne(
-                Filters.eq("idFrequencia", idFrequencia),
-                Updates.set("justificativa", texto)
-        );
-
-        System.out.println("Justificativa adicionada!");
-    }
-
-    // ============================================================
-    // LISTAR POR ALUNO
-    // ============================================================
-    public List<Frequencia> listarFrequenciaAluno(int matriculaAluno) {
-
-        List<Frequencia> lista = new ArrayList<>();
-
-        for (Document d : collection.find(Filters.eq("idAluno", matriculaAluno))) {
-            lista.add(documentToFrequencia(d));
+        try {
+            collection.updateOne(Filters.eq("idFrequencia", idFrequencia),
+                    new Document("$set", new Document("justificativa", texto)));
+            System.out.println("✔️ Falta justificada!");
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao justificar falta: " + e.getMessage());
         }
-
-        return lista;
-    }
-
-    // ============================================================
-    // LISTAR POR TURMA
-    // ============================================================
-    public List<Frequencia> listarFrequenciaTurma(int idTurma) {
-
-        List<Frequencia> lista = new ArrayList<>();
-
-        for (Document d : collection.find(Filters.eq("idTurma", idTurma))) {
-            lista.add(documentToFrequencia(d));
-        }
-
-        return lista;
-    }
-
-    // ============================================================
-    // REMOVER FREQUÊNCIA
-    // ============================================================
-    public void excluirFrequencia(int idFrequencia) {
-        collection.deleteOne(Filters.eq("idFrequencia", idFrequencia));
-        System.out.println("Frequência excluída!");
     }
 
     // ============================================================
     // GERAR RELATÓRIO
     // ============================================================
-    public String gerarRelatorioFrequencia(String nome, int matriculaAluno, int idTurma,
-                                           int idFrequencia, LocalDate dataAula,
-                                           String statusPresenca) {
-
-        return "\n===== RELATÓRIO DE FREQUÊNCIA =====\n"
-                + "Aluno: " + nome + "\n"
-                + "Matrícula: " + matriculaAluno + "\n"
-                + "Turma: " + idTurma + "\n"
-                + "ID Frequência: " + idFrequencia + "\n"
-                + "Data da Aula: " + dataAula + "\n"
-                + "Status: " + statusPresenca + "\n"
-                + "===================================\n";
+    public String gerarRelatorioFrequencia(Frequencia f) {
+        return f.toString();
     }
 
     // ============================================================
-    // DOCUMENT → OBJETO
+    // DOCUMENT → FREQUÊNCIA
     // ============================================================
     private Frequencia documentToFrequencia(Document doc) {
-
-        LocalDate dataAula = LocalDate.parse(doc.getString("dataAula"));
-
         return new Frequencia(
                 doc.getInteger("idFrequencia"),
                 doc.getInteger("idAluno"),
                 doc.getInteger("idTurma"),
-                dataAula,
+                LocalDate.parse(doc.getString("dataAula")),
                 doc.getString("statusPresenca"),
                 doc.getString("justificativa")
         );

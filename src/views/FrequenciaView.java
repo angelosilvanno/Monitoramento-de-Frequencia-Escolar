@@ -4,221 +4,171 @@ import dao.FrequenciaDAO;
 import models.Frequencia;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
 public class FrequenciaView {
 
+    private static final Scanner sc = new Scanner(System.in);
+    private static final FrequenciaDAO dao = new FrequenciaDAO();
+
     public static void gerenciarFrequencia() {
-        FrequenciaDAO frequenciaDAO = new FrequenciaDAO();
-        DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        Scanner sc = new Scanner(System.in);
 
         while (true) {
-            System.out.println("\n=== GERENCIAMENTO DE FREQUÊNCIA ===");
-            System.out.println("1. Registrar Frequência (Criar)");
-            System.out.println("2. Editar Registro de Frequência");
-            System.out.println("3. Excluir Registro de Frequência");
+            System.out.println("\n=== GERENCIAMENTO DE FREQUÊNCIAS ===");
+            System.out.println("1. Registrar Frequência");
+            System.out.println("2. Editar Frequência");
+            System.out.println("3. Excluir Frequência");
             System.out.println("4. Listar Frequência por Aluno");
             System.out.println("5. Listar Frequência por Turma");
-            System.out.println("6. Voltar ao Menu");
+            System.out.println("6. Registrar Presença");
+            System.out.println("7. Justificar Falta");
+            System.out.println("8. Gerar Relatório");
+            System.out.println("9. Voltar ao Menu");
             System.out.print("> ");
 
             int opcao;
-
             try {
                 opcao = Integer.parseInt(sc.nextLine());
             } catch (Exception e) {
-                System.out.println("Opção inválida! Por favor, insira um número.");
+                System.out.println(" Opção inválida!");
                 continue;
             }
 
             switch (opcao) {
-                case 1 -> registrarFrequencia(sc, frequenciaDAO, DATE_FORMATTER);
-                case 2 -> editarFrequencia(sc, frequenciaDAO, DATE_FORMATTER);
-                case 3 -> excluirFrequencia(sc, frequenciaDAO);
-                case 4 -> listarFrequenciaAluno(sc, frequenciaDAO, DATE_FORMATTER);
-                case 5 -> listarFrequenciaTurma(sc, frequenciaDAO, DATE_FORMATTER);
-                case 6 -> { return; }
-                default -> System.out.println("Opção inválida!");
+                case 1 -> registrarFrequencia();
+                case 2 -> editarFrequencia();
+                case 3 -> excluirFrequencia();
+                case 4 -> listarFrequenciaAluno();
+                case 5 -> listarFrequenciaTurma();
+                case 6 -> registrarPresenca();
+                case 7 -> justificarFalta();
+                case 8 -> gerarRelatorio();
+                case 9 -> { return; }
+                default -> System.out.println(" Opção inválida!");
             }
         }
     }
 
-    // ============================================================
-    // REGISTRAR FREQUÊNCIA (CRIAR)
-    // ============================================================
-    private static void registrarFrequencia(Scanner sc, FrequenciaDAO frequenciaDAO, DateTimeFormatter DATE_FORMATTER) {
+    private static void registrarFrequencia() {
         try {
-            System.out.print("ID do Registro de Frequência: ");
+            System.out.print("ID Frequência: ");
             int idFrequencia = Integer.parseInt(sc.nextLine());
-
-            System.out.print("ID do Aluno (Matrícula): ");
+            System.out.print("ID Aluno: ");
             int idAluno = Integer.parseInt(sc.nextLine());
-
-            System.out.print("ID da Turma: ");
+            System.out.print("ID Turma: ");
             int idTurma = Integer.parseInt(sc.nextLine());
+            System.out.print("Data da Aula (yyyy-MM-dd): ");
+            LocalDate data = LocalDate.parse(sc.nextLine());
+            System.out.print("Status Presença: ");
+            String status = sc.nextLine();
 
-            System.out.print("Data da Aula (Formato dd/MM/yyyy): ");
-            String dataStr = sc.nextLine();
-            LocalDate dataAula = LocalDate.parse(dataStr, DATE_FORMATTER);
+            Frequencia f = dao.criarFrequencia(idAluno, idTurma, idFrequencia, data, status);
+            if (f != null) System.out.println("✔️ Frequência registrada!");
+            else System.out.println(" Falha ao registrar frequência!");
 
-            System.out.print("Status de Presença (PRESENTE / FALTA / FALTA_JUSTIFICADA): ");
-            String status = sc.nextLine().toUpperCase();
-            
-            String justificativa = "";
-            if (status.equals("FALTA") || status.equals("FALTA_JUSTIFICADA")) {
-                System.out.print("Justificativa (Se houver): ");
-                justificativa = sc.nextLine();
-            }
-
-            Frequencia novoRegistro = new Frequencia(
-                idFrequencia, idAluno, idTurma, dataAula, status, justificativa
-            );
-
-            frequenciaDAO.criarFrequencia(novoRegistro);
-            System.out.println("Registro de Frequência criado com sucesso!");
-
-        } catch (NumberFormatException e) {
-            System.out.println("Erro: ID, Matrícula ou Turma devem ser números inteiros.");
-        } catch (DateTimeParseException e) {
-            System.out.println("Erro: Formato de data inválido. Use dd/MM/yyyy.");
         } catch (Exception e) {
-            System.out.println("Erro ao registrar frequência: " + e.getMessage());
+            System.out.println(" Erro: " + e.getMessage());
         }
     }
 
-    // ============================================================
-    // EDITAR REGISTRO
-    // ============================================================
-    private static void editarFrequencia(Scanner sc, FrequenciaDAO frequenciaDAO, DateTimeFormatter DATE_FORMATTER) {
+    private static void editarFrequencia() {
         try {
-            System.out.print("ID do Registro de Frequência para editar: ");
-            int idFrequencia = Integer.parseInt(sc.nextLine());
-
-            System.out.println("Informe os novos dados para o registro ID: " + idFrequencia);
-
-            System.out.print("Novo ID do Aluno (Matrícula): ");
+            System.out.print("ID Frequência a editar: ");
+            int idF = Integer.parseInt(sc.nextLine());
+            System.out.print("ID Aluno: ");
             int idAluno = Integer.parseInt(sc.nextLine());
-
-            System.out.print("Novo ID da Turma: ");
+            System.out.print("ID Turma: ");
             int idTurma = Integer.parseInt(sc.nextLine());
+            System.out.print("Data da Aula (yyyy-MM-dd): ");
+            LocalDate data = LocalDate.parse(sc.nextLine());
+            System.out.print("Status Presença: ");
+            String status = sc.nextLine();
 
-            System.out.print("Nova Data da Aula (Formato dd/MM/yyyy): ");
-            String dataStr = sc.nextLine();
-            LocalDate dataAula = LocalDate.parse(dataStr, DATE_FORMATTER);
+            Frequencia f = new Frequencia(idF, idAluno, idTurma, data, status, "");
+            dao.editarFrequencia(f, idAluno, idTurma, idF, data, status);
 
-            System.out.print("Novo Status de Presença (PRESENTE / FALTA / FALTA_JUSTIFICADA): ");
-            String status = sc.nextLine().toUpperCase();
-            
-            System.out.print("Nova Justificativa (Deixe vazio se não houver): ");
-            String justificativa = sc.nextLine();
-
-
-            Frequencia registroAtualizado = new Frequencia(
-                idFrequencia, idAluno, idTurma, dataAula, status, justificativa
-            );
-
-            frequenciaDAO.editarFrequencia(registroAtualizado);
-            System.out.println("Registro de Frequência atualizado com sucesso!");
-        
-        } catch (NumberFormatException e) {
-            System.out.println("Erro: ID, Matrícula ou Turma devem ser números inteiros.");
-        } catch (DateTimeParseException e) {
-            System.out.println("Erro: Formato de data inválido. Use dd/MM/yyyy.");
         } catch (Exception e) {
-            System.out.println("Erro ao editar frequência: " + e.getMessage());
+            System.out.println(" Erro: " + e.getMessage());
         }
     }
 
-    // ============================================================
-    // EXCLUIR REGISTRO
-    // ============================================================
-    private static void excluirFrequencia(Scanner sc, FrequenciaDAO frequenciaDAO) {
+    private static void excluirFrequencia() {
         try {
-            System.out.print("ID do Registro de Frequência para remover: ");
-            int idFrequencia = Integer.parseInt(sc.nextLine());
-
-            frequenciaDAO.excluirFrequencia(idFrequencia);
-            System.out.println("Registro de Frequência removido com sucesso!");
-        } catch (NumberFormatException e) {
-            System.out.println("Erro: ID deve ser um número inteiro.");
+            System.out.print("ID Frequência a remover: ");
+            int idF = Integer.parseInt(sc.nextLine());
+            dao.excluirFrequencia(idF);
         } catch (Exception e) {
-            System.out.println("Erro ao remover frequência: " + e.getMessage());
+            System.out.println(" Erro: " + e.getMessage());
         }
     }
 
-    // ============================================================
-    // LISTAR FREQUÊNCIA POR ALUNO
-    // ============================================================
-    private static void listarFrequenciaAluno(Scanner sc, FrequenciaDAO frequenciaDAO, DateTimeFormatter DATE_FORMATTER) {
+    private static void listarFrequenciaAluno() {
         try {
-            System.out.print("Informe a Matrícula (ID) do Aluno: ");
+            System.out.print("ID Aluno: ");
             int idAluno = Integer.parseInt(sc.nextLine());
-
-            List<Frequencia> frequencias = frequenciaDAO.listarFrequenciaAluno(idAluno);
-
-            if (frequencias.isEmpty()) {
-                System.out.println("Nenhum registro de frequência encontrado para o aluno " + idAluno + ".");
-                return;
-            }
-
-            System.out.println("\n--- FREQUÊNCIA DO ALUNO ID: " + idAluno + " ---");
-            System.out.printf("%-15s | %-12s | %-12s | %-20s | %s\n", 
-                "ID Registro", "ID Turma", "Data Aula", "Status", "Justificativa");
-            System.out.println("----------------------------------------------------------------------------------");
-
-            for (Frequencia f : frequencias) {
-                System.out.printf("%-15d | %-12d | %-12s | %-20s | %s\n",
-                    f.getIdFrequencia(),
-                    f.getIdTurma(),
-                    f.getDataAula().format(DATE_FORMATTER),
-                    f.getStatusPresenca(),
-                    f.getJustificativa().isEmpty() ? "-" : f.getJustificativa()
-                );
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Erro: Matrícula deve ser um número inteiro.");
+            List<Frequencia> lista = dao.listarFrequenciaAluno(idAluno);
+            if (lista.isEmpty()) System.out.println("❌ Nenhuma frequência encontrada!");
+            else lista.forEach(f -> System.out.println(f));
         } catch (Exception e) {
-            System.out.println("Erro ao listar frequência por aluno: " + e.getMessage());
+            System.out.println(" Erro: " + e.getMessage());
         }
     }
 
-    // ============================================================
-    // LISTAR FREQUÊNCIA POR TURMA
-    // ============================================================
-    private static void listarFrequenciaTurma(Scanner sc, FrequenciaDAO frequenciaDAO, DateTimeFormatter DATE_FORMATTER) {
+    private static void listarFrequenciaTurma() {
         try {
-            System.out.print("Informe o ID da Turma: ");
+            System.out.print("ID Turma: ");
             int idTurma = Integer.parseInt(sc.nextLine());
-
-            List<Frequencia> frequencias = frequenciaDAO.listarFrequenciaTurma(idTurma);
-
-            if (frequencias.isEmpty()) {
-                System.out.println("Nenhum registro de frequência encontrado para a turma " + idTurma + ".");
-                return;
-            }
-
-            System.out.println("\n--- FREQUÊNCIA DA TURMA ID: " + idTurma + " ---");
-            System.out.printf("%-15s | %-12s | %-12s | %-20s | %s\n", 
-                "ID Registro", "ID Aluno", "Data Aula", "Status", "Justificativa");
-            System.out.println("----------------------------------------------------------------------------------");
-
-            for (Frequencia f : frequencias) {
-                System.out.printf("%-15d | %-12d | %-12s | %-20s | %s\n",
-                    f.getIdFrequencia(),
-                    f.getIdAluno(),
-                    f.getDataAula().format(DATE_FORMATTER),
-                    f.getStatusPresenca(),
-                    f.getJustificativa().isEmpty() ? "-" : f.getJustificativa()
-                );
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Erro: ID da Turma deve ser um número inteiro.");
+            List<Frequencia> lista = dao.listarFrequenciaTurma(idTurma);
+            if (lista.isEmpty()) System.out.println("❌ Nenhuma frequência encontrada!");
+            else lista.forEach(f -> System.out.println(f));
         } catch (Exception e) {
-            System.out.println("Erro ao listar frequência por turma: " + e.getMessage());
+            System.out.println(" Erro: " + e.getMessage());
+        }
+    }
+
+    private static void registrarPresenca() {
+        try {
+            System.out.print("ID Frequência: ");
+            int idF = Integer.parseInt(sc.nextLine());
+            System.out.print("Novo Status Presença: ");
+            String status = sc.nextLine();
+            dao.registrarPresenca(idF, status);
+        } catch (Exception e) {
+            System.out.println(" Erro: " + e.getMessage());
+        }
+    }
+
+    private static void justificarFalta() {
+        try {
+            System.out.print("ID Frequência: ");
+            int idF = Integer.parseInt(sc.nextLine());
+            System.out.print("Justificativa: ");
+            String texto = sc.nextLine();
+            dao.justificarFalta(idF, texto);
+        } catch (Exception e) {
+            System.out.println(" Erro: " + e.getMessage());
+        }
+    }
+
+    private static void gerarRelatorio() {
+        try {
+            System.out.print("ID Frequência: ");
+            int idF = Integer.parseInt(sc.nextLine());
+            System.out.print("ID Aluno: ");
+            int idAluno = Integer.parseInt(sc.nextLine());
+            System.out.print("ID Turma: ");
+            int idTurma = Integer.parseInt(sc.nextLine());
+            System.out.print("Data da Aula (yyyy-MM-dd): ");
+            LocalDate data = LocalDate.parse(sc.nextLine());
+            System.out.print("Status Presença: ");
+            String status = sc.nextLine();
+
+            Frequencia f = new Frequencia(idF, idAluno, idTurma, data, status, "");
+            String relatorio = dao.gerarRelatorioFrequencia(f);
+            System.out.println(relatorio);
+        } catch (Exception e) {
+            System.out.println(" Erro: " + e.getMessage());
         }
     }
 }
