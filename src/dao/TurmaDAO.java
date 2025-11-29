@@ -14,14 +14,6 @@ import com.mongodb.client.FindIterable;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-    tratativas
-        criar turma                             feito
-        adicionar aluno a turma                 feito
-        adcionar o mais de um prof na turma     feito             
-
-*/
-
 public class TurmaDAO {
 
     private static MongoCollection<Document> collection;
@@ -35,53 +27,49 @@ public class TurmaDAO {
     //                      CRIAR TURMA 
     // ============================================================
     public static Turma criarTurma(int idTurma, String nomeTurma) {
-        
+
         TurmaDAO dao = new TurmaDAO();
 
         if (dao.turmaExiste(idTurma)) {
             System.out.println("ERRO: Já existe uma turma com esse ID!");
             return null;
-        } else {
-            Document doc = new Document()
-                    .append("idTurma", idTurma )
-                    .append("nomeTurma", nomeTurma)
-                    .append("alunos", new ArrayList<>())
-                    .append("professor", null);
-
-            collection.insertOne(doc);
-            System.out.println("Turma criada no MongoDB!");
         }
+
+        Document doc = new Document()
+                .append("idTurma", idTurma)
+                .append("nomeTurma", nomeTurma)
+                .append("alunos", new ArrayList<>())
+                .append("professor", null);
+
+        collection.insertOne(doc);
+        System.out.println("Turma criada no MongoDB!");
 
         return new Turma(idTurma, nomeTurma);
     }
 
     // ============================================================
-    //                  BUSCAR POR ID
+    //                      BUSCAR POR ID
     // ============================================================
     public static Turma buscarTurma(int idTurma) {
         Document doc = collection.find(Filters.eq("idTurma", idTurma)).first();
-
-        if (doc == null) return  null;
-
+        if (doc == null) return null;
         return documentToTurma(doc);
     }
 
     // ============================================================
-    //                  EXCLUIR TURMA 
+    //                      EXCLUIR TURMA
     // ============================================================
     public static void excluirTurma(int idTurma) {
-
         collection.deleteOne(Filters.eq("idTurma", idTurma));
         System.out.println("Turma removida do MongoDB!");
-    }  
+    }
 
     // ============================================================
-    //                  LISTAR TURMAS  
+    //                      LISTAR TURMAS
     // ============================================================
     public static List<Turma> listarTurma() {
 
         List<Turma> lista = new ArrayList<>();
-
         FindIterable<Document> docs = collection.find();
 
         for (Document d : docs) {
@@ -92,7 +80,7 @@ public class TurmaDAO {
     }
 
     // ============================================================
-    //                      EDITAR TURMA 
+    //                      EDITAR TURMA
     // ============================================================
     public static void editarTurma(Turma turma, int idTurma, String nomeTurma) {
 
@@ -102,13 +90,11 @@ public class TurmaDAO {
         );
 
         collection.updateOne(Filters.eq("idTurma", turma.getIdTurma()), update);
-
         System.out.println("Turma atualizada com sucesso!");
     }
 
-
     // ============================================================
-    //                      VISUALIZAR TURMA 
+    //                    VISUALIZAR TURMA
     // ============================================================
     public void visualizarTurma(int idTurma) {
 
@@ -124,24 +110,24 @@ public class TurmaDAO {
         System.out.println("Nome: " + turmaDoc.getString("nomeTurma"));
         System.out.println("====================================");
 
+        // PROFESSOR
         String numeroCNDB = turmaDoc.getString("professor");
 
         if (numeroCNDB != null) {
-            ProfessorDAO professorDAO = new ProfessorDAO();
-            Professor professor = professorDAO.buscarProfessor(numeroCNDB);
+            Professor professor = ProfessorDAO.buscarProfessor(numeroCNDB);
 
             if (professor != null) {
                 System.out.println("Professor: " + professor.getNome() + " (CNDB: " + numeroCNDB + ")");
             } else {
-                System.out.println("Professor: (Professor não encontrado no DB) CNDB: " + numeroCNDB);
+                System.out.println("Professor não localizado no MongoDB (CNDB: " + numeroCNDB + ")");
             }
-
         } else {
             System.out.println("Nenhum professor atribuído.");
         }
 
         System.out.println("------------------------------------");
 
+        // ALUNOS
         List<Integer> matriculas = turmaDoc.getList("alunos", Integer.class);
 
         if (matriculas == null || matriculas.isEmpty()) {
@@ -151,21 +137,19 @@ public class TurmaDAO {
 
         System.out.println("Alunos da Turma:");
 
-        AlunoDAO alunoDAO = new AlunoDAO();
-
         for (Integer m : matriculas) {
-            Aluno a = alunoDAO.buscarAluno(m);
+            Aluno a = AlunoDAO.buscarAluno(m);
 
             if (a != null) {
                 System.out.println("- " + a.getNome() + " (Matrícula: " + m + ")");
             } else {
-                System.out.println("- (Aluno não encontrado no DB) Matrícula: " + m);
+                System.out.println("- Matrícula " + m + " não localizada no MongoDB");
             }
         }
     }
 
     // ============================================================
-    //              ADICIONAR ALUNO NA TURMA 
+    //              ADICIONAR ALUNO À TURMA
     // ============================================================
     public void adicionarAluno(int idTurma, Aluno aluno) {
 
@@ -184,14 +168,13 @@ public class TurmaDAO {
         }
 
         Document update = new Document("$push", new Document("alunos", aluno.getMatricula()));
-
         collection.updateOne(Filters.eq("idTurma", idTurma), update);
 
         System.out.println("Aluno adicionado à turma!");
     }
 
     // ============================================================
-    //                  ATRIBUIR PROFESSOR 
+    //                  ATRIBUIR PROFESSOR
     // ============================================================
     public void atribuirProfessor(int idTurma, Professor professor) {
 
@@ -205,38 +188,34 @@ public class TurmaDAO {
         String professorAtual = turmaDoc.getString("professor");
 
         if (professorAtual != null && !professorAtual.isEmpty()) {
-            System.out.println("Essa turma já possui um professor atribuído (CNDB: " + professorAtual + ")");
+            System.out.println("Essa turma já possui professor (CNDB: " + professorAtual + ")");
             return;
         }
 
         Document outraTurma = collection.find(Filters.eq("professor", professor.getNumeroCNDB())).first();
 
         if (outraTurma != null) {
-            System.out.println("Este professor já está atribuído à turma ID: " + outraTurma.getInteger("idTurma"));
+            System.out.println("Professor já vinculado à turma ID: " + outraTurma.getInteger("idTurma"));
             return;
         }
 
         Document update = new Document("$set", new Document("professor", professor.getNumeroCNDB()));
-
         collection.updateOne(Filters.eq("idTurma", idTurma), update);
 
         System.out.println("Professor atribuído à turma!");
     }
 
-
     // ============================================================
-    //                  DOCUMENT TURMA
+    //                      DOCUMENT → TURMA
     // ============================================================
     private static Turma documentToTurma(Document doc) {
-
         return new Turma(
                 doc.getInteger("idTurma"),
                 doc.getString("nomeTurma")
         );
     }
-    
+
     public boolean turmaExiste(int idTurma) {
         return collection.find(Filters.eq("idTurma", idTurma)).first() != null;
     }
-
 }
