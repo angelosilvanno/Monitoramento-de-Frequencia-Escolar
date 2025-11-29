@@ -3,6 +3,7 @@ package models;
 public class Turma {
     private int idTurma;
     private String nomeTurma;
+    private Professor professor; 
 
     public Turma(int idTurma, String nomeTurma){
         this.idTurma = idTurma;
@@ -14,7 +15,15 @@ public class Turma {
     }
 
     public String getNomeTurma(){
-        return  nomeTurma;
+        return nomeTurma;
+    }
+
+    public Professor getProfessor() {
+        return professor;
+    }
+
+    public void setProfessor(Professor professor) {
+        this.professor = professor;
     }
 
     public void setIdTurma(int idTurma){
@@ -25,14 +34,15 @@ public class Turma {
         this.nomeTurma = nomeTurma;
     }
 
-   @Override
+    @Override
     public String toString() {
+        String nomeProf = (professor != null) ? professor.getNome() : "Nenhum";
         String res = "";
         res += "==========================================\n";
         res += "id " + getIdTurma() + "\n";
         res += "nome da turma " + getNomeTurma() + "\n";
+        res += "professor " + nomeProf + "\n";
         res += "==========================================\n";
         return res;
     }
-
 }

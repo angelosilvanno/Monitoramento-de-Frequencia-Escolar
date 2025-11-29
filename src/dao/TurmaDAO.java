@@ -18,6 +18,9 @@ public class TurmaDAO {
 
     private static MongoCollection<Document> collection;
 
+    // NOVA LISTA LOCAL ADICIONADA (SEM IMPACTAR O MONGODB)
+    private static List<Turma> turmas = new ArrayList<>();
+
     public TurmaDAO() {
         MongoDatabase db = MongoConnection.getDatabase("escola");
         collection = db.getCollection("turmas");
@@ -44,7 +47,10 @@ public class TurmaDAO {
         collection.insertOne(doc);
         System.out.println("Turma criada no MongoDB!");
 
-        return new Turma(idTurma, nomeTurma);
+        Turma turma = new Turma(idTurma, nomeTurma);
+        turmas.add(turma); // <--- SINCRONIZA COM A LISTA LOCAL
+
+        return turma;
     }
 
     // ============================================================
@@ -53,7 +59,9 @@ public class TurmaDAO {
     public static Turma buscarTurma(int idTurma) {
         Document doc = collection.find(Filters.eq("idTurma", idTurma)).first();
         if (doc == null) return null;
-        return documentToTurma(doc);
+
+        Turma t = documentToTurma(doc);
+        return t;
     }
 
     // ============================================================
@@ -61,6 +69,7 @@ public class TurmaDAO {
     // ============================================================
     public static void excluirTurma(int idTurma) {
         collection.deleteOne(Filters.eq("idTurma", idTurma));
+        turmas.removeIf(t -> t.getIdTurma() == idTurma); // remove da lista local
         System.out.println("Turma removida do MongoDB!");
     }
 
@@ -90,6 +99,10 @@ public class TurmaDAO {
         );
 
         collection.updateOne(Filters.eq("idTurma", turma.getIdTurma()), update);
+
+        turmas.removeIf(t -> t.getIdTurma() == turma.getIdTurma());
+        turmas.add(new Turma(idTurma, nomeTurma)); // atualiza lista local
+
         System.out.println("Turma atualizada com sucesso!");
     }
 
@@ -202,6 +215,10 @@ public class TurmaDAO {
         Document update = new Document("$set", new Document("professor", professor.getNumeroCNDB()));
         collection.updateOne(Filters.eq("idTurma", idTurma), update);
 
+        // sincroniza professor na lista local
+        Turma t = buscarTurma(idTurma);
+        if (t != null) t.setProfessor(professor);
+
         System.out.println("Professor atribuído à turma!");
     }
 
@@ -217,5 +234,30 @@ public class TurmaDAO {
 
     public boolean turmaExiste(int idTurma) {
         return collection.find(Filters.eq("idTurma", idTurma)).first() != null;
+    }
+
+
+    public void criarTurmaLocal(int idTurma, String nomeTurma) {
+        turmas.add(new Turma(idTurma, nomeTurma));
+    }
+
+    public List<Turma> listarTurmasLocal() {
+        return turmas;
+    }
+
+    public Turma buscarTurmaLocal(int idTurma) {
+        for (Turma t : turmas) {
+            if (t.getIdTurma() == idTurma) return t;
+        }
+        return null;
+    }
+
+    public boolean atribuirProfessorLocal(int idTurma, Professor professor) {
+        Turma turma = buscarTurmaLocal(idTurma);
+        if (turma != null) {
+            turma.setProfessor(professor);
+            return true;
+        }
+        return false;
     }
 }
