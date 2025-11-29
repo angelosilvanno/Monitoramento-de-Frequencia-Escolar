@@ -16,8 +16,8 @@ public class Main {
             System.out.println("1. Gerenciar Turmas");
             System.out.println("2. Gerenciar Alunos");
             System.out.println("3. Gerenciar Professor");
-            System.out.println("4. Gerenciar Frequência"); // Nova opção
-            System.out.println("5. Sair"); // Opção Sair movida
+            System.out.println("4. Gerenciar Frequência"); 
+            System.out.println("5. Sair"); 
             System.out.print("-> ");
 
             int op;
