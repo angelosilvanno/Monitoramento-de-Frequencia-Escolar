@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import models.Usuario;
 import views.LoginView;
-//import views.MenuPrincipalView;
+import views.MenuPrincipalView;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,6 +15,6 @@ public class Main {
             return;
         }
 
-        //MenuPrincipalView.menu(logado, sc);
+        MenuPrincipalView.menu(logado, sc);
     }
 }

@@ -26,6 +26,7 @@ src\views\AlunoView.java ^
 src\views\ProfessorView.java ^
 src\views\FrequenciaView.java ^
 src\views\LoginView.java ^
+src\views\MenuPrincipalView.java ^
 src\service\UsuarioService.java ^
 src\Main.java 
 if errorlevel 1 (

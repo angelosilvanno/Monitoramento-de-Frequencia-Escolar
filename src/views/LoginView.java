@@ -1,11 +1,10 @@
 package views;
 
+import java.util.Scanner;
 import models.Aluno;
 import models.Professor;
 import models.Usuario;
 import service.UsuarioService;
-
-import java.util.Scanner;
 
 public class LoginView {
 
@@ -18,7 +17,7 @@ public class LoginView {
             System.out.println("1. Fazer Login");
             System.out.println("2. Cadastrar Usuário");
             System.out.println("3. Sair");
-            System.out.print("Escolha: ");
+            System.out.print("-> ");
             int op = sc.nextInt();
             sc.nextLine();
 
@@ -33,11 +32,11 @@ public class LoginView {
                 Usuario u = service.login(email, senha);
 
                 if (u == null) {
-                    System.out.println("\n❌ Credenciais inválidas!\n");
+                    System.out.println("\nCredenciais inválidas!\n");
                     continue;
                 }
 
-                System.out.println("\n✔ Login realizado com sucesso!\n");
+                System.out.println("\nLogin realizado com sucesso!\n");
                 return u;
 
             } else if (op == 2) {
