@@ -20,10 +20,13 @@ src\dao\AlunoDAO.java ^
 src\dao\TurmaDAO.java ^
 src\dao\ProfessorDAO.java ^
 src\dao\FrequenciaDAO.java ^
+src\dao\UsuarioDAO.java ^
 src\views\TurmaView.java ^
 src\views\AlunoView.java ^
 src\views\ProfessorView.java ^
 src\views\FrequenciaView.java ^
+src\views\LoginView.java ^
+src\service\UsuarioService.java ^
 src\Main.java 
 if errorlevel 1 (
     echo.

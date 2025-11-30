@@ -1,44 +1,20 @@
 import java.util.Scanner;
-import views.TurmaView;
-import views.AlunoView;
-import views.ProfessorView;
-import views.FrequenciaView;
+import models.Usuario;
+import views.LoginView;
+//import views.MenuPrincipalView;
 
 public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
 
-        while (true) {
-            System.out.println("\n=== MENU PRINCIPAL ===");
-            System.out.println("1. Gerenciar Turmas");
-            System.out.println("2. Gerenciar Alunos");
-            System.out.println("3. Gerenciar Professor");
-            System.out.println("4. Gerenciar Frequência"); 
-            System.out.println("5. Sair"); 
-            System.out.print("-> ");
+        Usuario logado = LoginView.telaLogin(sc);
 
-            int op;
-
-            try {
-                op = Integer.parseInt(sc.nextLine());
-            } catch (Exception e) {
-                System.out.println("Opção inválida!");
-                continue;
-            }
-
-            switch (op) {
-                case 1 -> TurmaView.gerenciarTurmas();
-                case 2 -> AlunoView.gerenciarAlunos();
-                case 3 -> ProfessorView.gerenciarProfessor();
-                case 4 -> FrequenciaView.gerenciarFrequencia();
-                case 5 -> {
-                    System.out.println("Encerrando...");
-                    sc.close(); 
-                    return;
-                }
-                default -> System.out.println("Opção inválida!");
-            }
+        if (logado == null) {
+            System.out.println("\nEncerrando...");
+            return;
         }
+
+        //MenuPrincipalView.menu(logado, sc);
     }
 }
