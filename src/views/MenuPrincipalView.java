@@ -1,6 +1,7 @@
 package views;
 
 import models.Usuario;
+import models.Aluno;
 import models.Professor;
 
 import dao.AlunoDAO;
@@ -19,6 +20,12 @@ public class MenuPrincipalView {
         if (logado instanceof Professor prof) {
             coordenador = prof.ehCoordenador();
         }
+
+        if (logado instanceof Aluno a) {
+            menuAluno(a, sc);
+            return;
+        }
+
 
         while (true) {
             System.out.println("\n===== MENU PRINCIPAL =====");
@@ -266,4 +273,49 @@ public class MenuPrincipalView {
             }
         }
     }
+
+    public static void menuAluno(Aluno logado, Scanner sc) {
+        while (true) {
+            System.out.println("\n===== MENU DO ALUNO =====");
+            System.out.println("1. Ver minhas turmas");
+            System.out.println("2. Ver detalhes de uma turma");
+            System.out.println("3. Sair");
+            System.out.print("-> ");
+
+            int op = sc.nextInt();
+            sc.nextLine();
+
+            switch (op) {
+
+                case 1 -> {
+                    int matricula = logado.getMatricula();
+
+                    System.out.println("\nTurmas do aluno:");
+                    TurmaDAO.listarTurma()
+                            .stream()
+                            .filter(t -> t.getAlunos().stream()
+                                    .anyMatch(a -> a.getMatricula() == matricula)
+                            )
+                            .forEach(t -> System.out.println(t.getIdTurma() + " - " + t.getNomeTurma()));
+                }
+
+                case 2 -> {
+                    System.out.print("ID da turma: ");
+                    int id = sc.nextInt();
+                    sc.nextLine();
+
+                    TurmaDAO daoT = new TurmaDAO();
+                    daoT.visualizarTurma(id);
+                }
+
+                case 3 -> {
+                    System.out.println("Saindo...");
+                    return;
+                }
+
+                default -> System.out.println("Opção inválida!");
+            }
+        }
+    }
+
 }

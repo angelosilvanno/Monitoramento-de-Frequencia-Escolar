@@ -1,13 +1,20 @@
 package models;
 
+import java.util.ArrayList;
+
 public class Turma {
     private int idTurma;
     private String nomeTurma;
     private Professor professor; 
+    private ArrayList<Aluno> alunos = new ArrayList<>();
 
     public Turma(int idTurma, String nomeTurma){
         this.idTurma = idTurma;
         this.nomeTurma = nomeTurma;
+    }
+    
+    public ArrayList<Aluno> getAlunos() {
+        return alunos;
     }
 
     public int getIdTurma(){
