@@ -97,6 +97,44 @@ public class TurmaDAO {
         return lista;
     }
 
+    //--------- VISUALIZAR TODAS AS TURMAS E EXIBIR ALUNOS E PROFESSORES ----------
+    public static void visualizarTodasTurmas() {
+
+        List<Turma> lista = listarTurma();
+
+        if (lista.isEmpty()) {
+            System.out.println("Nenhuma turma encontrada.");
+            return;
+        }
+
+        System.out.println("\n=========== TODAS AS TURMAS ===========");
+
+        for (Turma t : lista) {
+            System.out.println("---------------------------------------");
+            System.out.println("ID: " + t.getIdTurma());
+            System.out.println("Nome: " + t.getNomeTurma());
+
+            // Professor
+            if (t.getProfessor() != null) {
+                System.out.println("Professor: " + t.getProfessor().getNome());
+            } else {
+                System.out.println("Professor: Nenhum");
+            }
+
+            // Alunos
+            if (t.getAlunos().isEmpty()) {
+                System.out.println("Alunos: Nenhum");
+            } else {
+                System.out.println("Alunos:");
+                t.getAlunos().forEach(a ->
+                        System.out.println(" - " + a.getNome() + " (Mat: " + a.getMatricula() + ")")
+                );
+            }   
+        }
+
+        System.out.println("=======================================\n");
+    }
+
 
     // ============================================================
     //                      EDITAR TURMA

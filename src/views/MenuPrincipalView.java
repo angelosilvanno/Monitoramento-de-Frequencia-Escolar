@@ -272,6 +272,7 @@ public class MenuPrincipalView {
             System.out.println("4 - Adicionar Aluno");
             System.out.println("5 - Adicionar Professor");
             System.out.println("6 - Visualizar Turma");
+            System.out.println("7 - Visualizar Todas as Turmas");
             System.out.println("0 - Voltar");
             System.out.print("Escolha: ");
 
@@ -363,6 +364,8 @@ public class MenuPrincipalView {
                     TurmaDAO daoT = new TurmaDAO();
                     daoT.visualizarTurma(id);
                 }
+                
+                case 7 -> TurmaDAO.visualizarTodasTurmas();
 
                 case 0 -> System.out.println("Voltando...");
 
