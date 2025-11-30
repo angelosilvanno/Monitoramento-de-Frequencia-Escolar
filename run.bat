@@ -37,7 +37,7 @@ echo Execucao iniciada...
 echo.
 
 rem Executar a classe principal de testes
-java -cp "libs/*;bin" src.Main
+java -cp "libs/*;bin" Main
 
 echo.
 pause
