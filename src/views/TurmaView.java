@@ -14,6 +14,7 @@ public class TurmaView {
     public static void gerenciarTurmas() {
 
         Scanner sc = new Scanner(System.in);
+        TurmaDAO turmaDAO = new TurmaDAO(); 
         AlunoDAO alunoDAO = new AlunoDAO();
         ProfessorDAO professorDAO = new ProfessorDAO();
 
@@ -41,20 +42,20 @@ public class TurmaView {
             }
 
             switch (opcao) {
-                case 1 -> criarTurma(sc);
-                case 2 -> visualizarTurma(sc);
-                case 3 -> atualizarTurma(sc);
-                case 4 -> removerTurma(sc);
-                case 5 -> listarTurmas();
-                case 6 -> adicionarAluno(sc, alunoDAO);
-                case 7 -> atribuirProfessor(sc, professorDAO);
+                case 1 -> criarTurma(sc, turmaDAO);
+                case 2 -> visualizarTurma(sc, turmaDAO);
+                case 3 -> atualizarTurma(sc, turmaDAO);
+                case 4 -> removerTurma(sc, turmaDAO);
+                case 5 -> listarTurmas(turmaDAO);
+                case 6 -> adicionarAluno(sc, alunoDAO, turmaDAO);
+                case 7 -> atribuirProfessor(sc, professorDAO, turmaDAO);
                 case 8 -> { return; }
                 default -> System.out.println("Opção inválida!");
             }
         }
     }
 
-    private static void criarTurma(Scanner sc) {
+    private static void criarTurma(Scanner sc, TurmaDAO dao) {
         System.out.print("ID da Turma: ");
         int id = Integer.parseInt(sc.nextLine());
 
@@ -65,15 +66,14 @@ public class TurmaView {
         System.out.println("Turma criada com sucesso!");
     }
 
-    private static void visualizarTurma(Scanner sc) {
+    private static void visualizarTurma(Scanner sc, TurmaDAO dao) {
         System.out.print("Informe o ID da turma: ");
         int id = Integer.parseInt(sc.nextLine());
-
-        TurmaDAO dao = new TurmaDAO();
+        
         dao.visualizarTurma(id);
     }
 
-    private static void atualizarTurma(Scanner sc) {
+    private static void atualizarTurma(Scanner sc, TurmaDAO dao) {
         System.out.print("ID da Turma a atualizar: ");
         int idAntigo = Integer.parseInt(sc.nextLine());
 
@@ -94,15 +94,16 @@ public class TurmaView {
         System.out.println("Turma atualizada com sucesso!");
     }
 
-    private static void removerTurma(Scanner sc) {
+    private static void removerTurma(Scanner sc, TurmaDAO dao) {
         System.out.print("ID da turma a remover: ");
         int id = Integer.parseInt(sc.nextLine());
 
+        // Mantido estático
         TurmaDAO.excluirTurma(id);
         System.out.println("Turma removida com sucesso!");
     }
 
-    private static void listarTurmas() {
+    private static void listarTurmas(TurmaDAO dao) {
         System.out.println("\n=== LISTA DE TURMAS ===");
 
         List<Turma> turmas = TurmaDAO.listarTurma();
@@ -117,10 +118,11 @@ public class TurmaView {
         }
     }
 
-    private static void adicionarAluno(Scanner sc, AlunoDAO alunoDAO) {
+    private static void adicionarAluno(Scanner sc, AlunoDAO alunoDAO, TurmaDAO turmaDAO) {
         System.out.println("ID da Turma: ");
         int idTurma = Integer.parseInt(sc.nextLine());
 
+        // Mantido estático
         Turma turma = TurmaDAO.buscarTurma(idTurma);
 
         if (turma == null) {
@@ -138,13 +140,11 @@ public class TurmaView {
             return;
         }
 
-        TurmaDAO dao = new TurmaDAO();
-        dao.adicionarAluno(idTurma, aluno);
-
+        turmaDAO.adicionarAluno(idTurma, aluno);
         System.out.println("Aluno adicionado com sucesso!");
     }
 
-    private static void atribuirProfessor(Scanner sc, ProfessorDAO professorDAO) {
+    private static void atribuirProfessor(Scanner sc, ProfessorDAO professorDAO, TurmaDAO turmaDAO) {
         System.out.println("ID da Turma: ");
         int idTurma = Integer.parseInt(sc.nextLine());
 
@@ -155,7 +155,7 @@ public class TurmaView {
             return;
         }
 
-        System.out.println("Número CNDB do Professor: ");
+        System.out.print("Número CNDB do Professor: ");
         String numeroCNDB = sc.nextLine();
 
         Professor professor = ProfessorDAO.buscarProfessor(numeroCNDB);
@@ -165,9 +165,7 @@ public class TurmaView {
             return;
         }
 
-        TurmaDAO dao = new TurmaDAO();
-        dao.atribuirProfessor(idTurma, professor);
-
+        turmaDAO.atribuirProfessor(idTurma, professor);
         System.out.println("Professor atribuído com sucesso!");
     }
 }

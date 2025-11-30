@@ -1,5 +1,3 @@
-
-
 import java.util.Scanner;
 import views.TurmaView;
 import views.AlunoView;
