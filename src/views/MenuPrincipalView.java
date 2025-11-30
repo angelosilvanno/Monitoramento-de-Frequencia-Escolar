@@ -41,9 +41,7 @@ public class MenuPrincipalView {
             int op = sc.nextInt();
             sc.nextLine();
 
-            // -------------------------------
-            //     MENU COORDENADOR
-            // -------------------------------
+            //---------------- MENU COORDENADOR ---------------
             if (coordenador) {
                 switch (op) {
                     case 1 -> submenuAlunos(sc);
@@ -57,21 +55,18 @@ public class MenuPrincipalView {
                 }
             }
 
-            // -------------------------------
-            //   MENU PROFESSOR (NÃO COORDENADOR)
-            // -------------------------------
+            //--------- MENU PROFESSOR (NÃO COORDENADOR) --------
             else if (logado instanceof Professor p) {
 
                 switch (op) {
                     case 1 -> {
-                        System.out.println("\nSuas turmas:");
-                        TurmaDAO.listarTurma()
-                                .stream()
-                                .filter(t -> t.getProfessor() != null &&
-                                        t.getProfessor().equals(p.getNumeroCNDB()))
-                                .forEach(t -> System.out.println(t.getIdTurma() + " - " + t.getNomeTurma()));
+                            System.out.println("\nSuas turmas:");
+                            TurmaDAO.listarTurma()
+                                    .stream()
+                                    .filter(t -> t.getProfessor() != null &&
+                                                t.getProfessor().getNumeroCNDB().equals(p.getNumeroCNDB()))
+                                    .forEach(t -> System.out.println(t.getIdTurma() + " - " + t.getNomeTurma()));
                     }
-
                     case 2 -> {
                         System.out.print("ID da turma: ");
                         int id = sc.nextInt();
@@ -90,9 +85,7 @@ public class MenuPrincipalView {
                 }
             }
 
-            // -------------------------------
-            //           MENU ALUNO
-            // -------------------------------
+            //----------- MENU ALUNO ----------------
             else {
                 if (op == 1) {
                     System.out.println("Saindo...");
@@ -104,18 +97,16 @@ public class MenuPrincipalView {
         }
     }
 
-
-    // =====================================================================================
-    //                                   SUBMENU DE ALUNOS
-    // =====================================================================================
+    //--------------- SUBMENU DE ALUNOS ------------------
     private static void submenuAlunos(Scanner sc) {
         int op;
 
         do {
             System.out.println("\n----- MENU ALUNOS -----");
-            System.out.println("1 - Listar Alunos");
-            System.out.println("2 - Editar Aluno");
-            System.out.println("3 - Excluir Aluno");
+            System.out.println("1 - Cadastrar Alunos");
+            System.out.println("2 - Listar Alunos");
+            System.out.println("3 - Editar Aluno");
+            System.out.println("4 - Excluir Aluno");
             System.out.println("0 - Voltar");
             System.out.print("Escolha: ");
 
@@ -123,9 +114,34 @@ public class MenuPrincipalView {
             sc.nextLine();
 
             switch (op) {
-                case 1 -> AlunoDAO.visualizarAluno();
+                case 1 -> {
+                    System.out.print("Matrícula: ");
+                    int matricula = sc.nextInt();
+                    sc.nextLine();
 
-                case 2 -> {
+                    System.out.print("ID do Usuário: ");
+                    int idUsuario = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Nome: ");
+                    String nome = sc.nextLine();
+
+                    System.out.print("CPF: ");
+                    String cpf = sc.nextLine();
+
+                    System.out.print("Email: ");
+                    String email = sc.nextLine();
+
+                    System.out.print("Senha: ");
+                    String senha = sc.nextLine();
+
+                    System.out.print("Responsável: ");
+                    String nomeResp = sc.nextLine();
+
+                    AlunoDAO.criarAluno(nome, cpf, email, senha, idUsuario, matricula, nomeResp);
+                }  
+                case 2 -> AlunoDAO.visualizarAluno();
+                case 3 -> {
                     System.out.print("Matrícula: ");
                     int mat = sc.nextInt();
                     sc.nextLine();
@@ -158,7 +174,7 @@ public class MenuPrincipalView {
                     AlunoDAO.editarAluno(mat, idUsu, nome, cpf, email, senha, resp);
                 }
 
-                case 3 -> {
+                case 4 -> {
                     System.out.print("Matrícula: ");
                     int mat = sc.nextInt();
                     sc.nextLine();
@@ -173,10 +189,7 @@ public class MenuPrincipalView {
         } while (op != 0);
     }
 
-
-    // =====================================================================================
-    //                               SUBMENU DE PROFESSORES
-    // =====================================================================================
+    //--------------- SUBMENU DE PROFESSORES ------------------
     private static void submenuProfessores(Scanner sc) {
         int op;
 
@@ -247,10 +260,7 @@ public class MenuPrincipalView {
         } while (op != 0);
     }
 
-
-    // =====================================================================================
-    //                                   SUBMENU DE TURMAS
-    // =====================================================================================
+    //--------------- SUBMENU DE TURMAS ----------------
     private static void submenuTurmas(Scanner sc) {
         int op;
 
