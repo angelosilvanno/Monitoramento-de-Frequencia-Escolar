@@ -14,13 +14,16 @@ src\models\Usuario.java ^
 src\models\Aluno.java ^
 src\models\Turma.java ^
 src\models\Professor.java ^
+src\models\Frequencia.java ^
 src\dao\MongoConnection.java ^
 src\dao\AlunoDAO.java ^
 src\dao\TurmaDAO.java ^
 src\dao\ProfessorDAO.java ^
+src\dao\FrequenciaDAO.java ^
 src\views\TurmaView.java ^
 src\views\AlunoView.java ^
 src\views\ProfessorView.java ^
+src\views\FrequenciaView.java ^
 src\Main.java 
 if errorlevel 1 (
     echo.
