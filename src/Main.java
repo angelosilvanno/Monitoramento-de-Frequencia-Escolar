@@ -3,7 +3,6 @@ import views.TurmaView;
 import views.AlunoView;
 import views.ProfessorView;
 
-
 public class Main {
     public static void main(String[] args) {
 
@@ -33,6 +32,7 @@ public class Main {
                 case 3 -> ProfessorView.gerenciarProfessor();
                 case 5 -> {
                     System.out.println("Encerrando...");
+                    sc.close(); 
                     return;
                 }
                 default -> System.out.println("Opção inválida!");
