@@ -1,5 +1,6 @@
 package views;
 
+
 import models.Usuario;
 import models.Aluno;
 import models.Frequencia;
@@ -10,8 +11,7 @@ import dao.FrequenciaDAO;
 import dao.ProfessorDAO;
 import dao.TurmaDAO;
 
-import views.FrequenciaView;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -80,7 +80,114 @@ public class MenuPrincipalView {
                     TurmaDAO daoT = new TurmaDAO();
                     daoT.visualizarTurma(id);
                 }
-                case 3 -> FrequenciaView.gerenciarFrequencia();
+        case 3 -> {
+
+    FrequenciaDAO freqDAO = new FrequenciaDAO();
+
+    while (true) {
+        System.out.println("\n=== GERENCIAMENTO DE FREQUÊNCIAS ===");
+        System.out.println("1. Registrar Frequência");
+        System.out.println("2. Editar Frequência");
+        System.out.println("3. Excluir Frequência");
+        System.out.println("9. Voltar ao Menu");
+        System.out.print("> ");
+
+        int opc = Integer.parseInt(sc.nextLine());
+
+        if (opc == 9) break;
+
+        switch (opc) {
+
+            // ==========================================================
+            // REGISTRAR FREQUÊNCIA
+            // ==========================================================
+            case 1 -> {
+                System.out.print("ID da turma: ");
+                int idTurma = Integer.parseInt(sc.nextLine());
+
+                System.out.print("Matrícula do aluno: ");
+                int matricula = Integer.parseInt(sc.nextLine());
+
+                System.out.print("ID da frequência: ");
+                int idFreq = Integer.parseInt(sc.nextLine());
+
+                System.out.print("Data da aula (AAAA-MM-DD): ");
+                LocalDate dataAula = LocalDate.parse(sc.nextLine());
+
+                System.out.print("Status (PRESENTE/FALTA): ");
+                String status = sc.nextLine();
+
+                freqDAO.criarFrequencia(matricula, idTurma, idFreq, dataAula, status);
+            }
+
+            // ==========================================================
+            // EDITAR FREQUÊNCIA (SEM buscarFrequencia)
+            // ==========================================================
+            case 2 -> {
+                System.out.print("ID da turma: ");
+                int idTurma = Integer.parseInt(sc.nextLine());
+
+                List<Frequencia> lista = freqDAO.listarFrequenciaTurma(idTurma);
+
+                if (lista.isEmpty()) {
+                    System.out.println("Nenhuma frequência encontrada.");
+                    break;
+                }
+
+                System.out.println("\nFrequências encontradas:");
+                for (Frequencia f : lista) {
+                    System.out.println("ID: " + f.getIdFrequencia() +
+                                       " | Aluno: " + f.getIdAluno() +
+                                       " | Data: " + f.getDataAula() +
+                                       " | Status: " + f.getStatusPresenca());
+                }
+
+                System.out.print("Escolha o ID da frequência: ");
+                int idEscolhido = Integer.parseInt(sc.nextLine());
+
+                Frequencia selecionada = null;
+                for (Frequencia fx : lista) {
+                    if (fx.getIdFrequencia() == idEscolhido) {
+                        selecionada = fx;
+                        break;
+                    }
+                }
+
+                if (selecionada == null) {
+                    System.out.println("ID inválido!");
+                    break;
+                }
+
+                System.out.print("Nova data (AAAA-MM-DD): ");
+                LocalDate novaData = LocalDate.parse(sc.nextLine());
+
+                System.out.print("Novo status: ");
+                String novoStatus = sc.nextLine();
+
+                freqDAO.editarFrequencia(
+                        selecionada,
+                        selecionada.getIdAluno(),
+                        idTurma,
+                        selecionada.getIdFrequencia(),
+                        novaData,
+                        novoStatus
+                );
+            }
+
+            // ==========================================================
+            // EXCLUIR FREQUÊNCIA (SEM buscarFrequencia)
+            // ==========================================================
+            case 3 -> {
+                System.out.print("ID da frequência a excluir: ");
+                int idExcluir = Integer.parseInt(sc.nextLine());
+
+                freqDAO.excluirFrequencia(idExcluir);
+            }
+
+            default -> System.out.println("Opção inválida!");
+        }
+    }
+}
                 case 4 -> {
                     System.out.println("Saindo...");
                     sairMenu = true;
