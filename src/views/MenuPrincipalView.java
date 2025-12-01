@@ -1,116 +1,136 @@
 package views;
 
 import models.Usuario;
+import models.Aluno;
+import models.Frequencia;
 import models.Professor;
 
 import dao.AlunoDAO;
+import dao.FrequenciaDAO;
 import dao.ProfessorDAO;
 import dao.TurmaDAO;
 
 import views.FrequenciaView;
+
+import java.util.List;
 import java.util.Scanner;
 
 public class MenuPrincipalView {
 
     public static void menu(Usuario logado, Scanner sc) {
 
-        boolean coordenador = false;
+    boolean coordenador = false;
 
-        // Verifica se o usuário é professor coordenador
-        if (logado instanceof Professor prof) {
-            coordenador = prof.ehCoordenador();
+    if (logado instanceof Professor prof) {
+        coordenador = prof.ehCoordenador();
+    }
+
+    boolean sairMenu = false;
+    while (!sairMenu) {
+        System.out.println("\n===== MENU PRINCIPAL =====");
+
+        if (coordenador) {
+            System.out.println("1. Menu de Alunos");
+            System.out.println("2. Menu de Professores");
+            System.out.println("3. Menu de Turmas");
+            System.out.println("4. Sair");
+        } else if (logado instanceof Professor) {
+            System.out.println("1. Ver Minhas Turmas");
+            System.out.println("2. Ver Turma Específica");
+            System.out.println("3. Gerenciar Frequência");
+            System.out.println("4. Sair");
+        } else if (logado instanceof Aluno) {
+            System.out.println("1 - Minhas Turmas");
+            System.out.println("2 - Minha Frequência");
+            System.out.println("3 - Sair");
         }
 
-        while (true) {
-            System.out.println("\n===== MENU PRINCIPAL =====");
+        System.out.print("-> ");
+        int op = sc.nextInt();
+        sc.nextLine();
 
-            if (coordenador) {
-                System.out.println("1. Menu de Alunos");
-                System.out.println("2. Menu de Professores");
-                System.out.println("3. Menu de Turmas");
-                System.out.println("4. Sair");
-            } else if (logado instanceof Professor) {
-                System.out.println("1. Ver Minhas Turmas");
-                System.out.println("2. Ver Turma Específica");
-                System.out.println("3. Gerenciar Frequência");  // <-- ADICIONADO
-                System.out.println("4. Sair");
-            } else {
-                System.out.println("Você é ALUNO. Ainda não há opções disponíveis.");
-                System.out.println("1. Sair");
-            }
-
-            System.out.print("-> ");
-            int op = sc.nextInt();
-            sc.nextLine();
-
-            //---------------- MENU COORDENADOR ---------------
-            if (coordenador) {
-                switch (op) {
-                    case 1 -> submenuAlunos(sc);
-                    case 2 -> submenuProfessores(sc);
-                    case 3 -> submenuTurmas(sc);
-                    case 4 -> {
-                        System.out.println("Saindo...");
-                        return;
-                    }
-                    default -> System.out.println("Opção inválida!");
-                }
-            }
-
-            //--------- MENU PROFESSOR (NÃO COORDENADOR) --------
-            else if (logado instanceof Professor p) {
-
-                switch (op) {
-                    case 1 -> {
-                        System.out.println("\nSuas turmas:");
-                        TurmaDAO.listarTurma()
-                                .stream()
-                                .filter(t -> t.getProfessor() != null &&
-                                        t.getProfessor().getNumeroCNDB().equals(p.getNumeroCNDB()))
-                                .forEach(t -> System.out.println(t.getIdTurma() + " - " + t.getNomeTurma()));
-                    }
-                    case 2 -> {
-                        System.out.print("ID da turma: ");
-                        int id = sc.nextInt();
-                        sc.nextLine();
-
-                        TurmaDAO daoT = new TurmaDAO();
-                        daoT.visualizarTurma(id);
-                    }
-
-                    case 3 -> {
-                        // FREQUENCIA DO PROFESSOR
-                        
-                        FrequenciaView.gerenciarFrequencia();
-                    }
-
-                    case 4 -> {
-                        System.out.println("Saindo...");
-                        return;
-                    }
-
-                    default -> System.out.println("Opção inválida!");
-                }
-            }
-
-            //----------- MENU ALUNO ----------------
-            else {
-                if (op == 1) {
+        // --------------- MENU COORDENADOR --------------
+        if (coordenador) {
+            switch (op) {
+                case 1 -> submenuAlunos(sc);
+                case 2 -> submenuProfessores(sc);
+                case 3 -> submenuTurmas(sc);
+                case 4 -> {
                     System.out.println("Saindo...");
-                    return;
-                } else {
-                    System.out.println("Opção inválida!");
+                    sairMenu = true;
                 }
+                default -> System.out.println("Opção inválida!");
+            }
+
+        // ------------ MENU PROFESSOR (NÃO COORDENADOR) ---------------
+        } else if (logado instanceof Professor p) {
+            switch (op) {
+                case 1 -> {
+                    System.out.println("\nSuas turmas:");
+                    TurmaDAO.listarTurma()
+                            .stream()
+                            .filter(t -> t.getProfessor() != null &&
+                                    t.getProfessor().getNumeroCNDB().equals(p.getNumeroCNDB()))
+                            .forEach(t -> System.out.println(t.getIdTurma() + " - " + t.getNomeTurma()));
+                }
+                case 2 -> {
+                    System.out.print("ID da turma: ");
+                    int id = sc.nextInt();
+                    sc.nextLine();
+                    TurmaDAO daoT = new TurmaDAO();
+                    daoT.visualizarTurma(id);
+                }
+                case 3 -> FrequenciaView.gerenciarFrequencia();
+                case 4 -> {
+                    System.out.println("Saindo...");
+                    sairMenu = true;
+                }
+                default -> System.out.println("Opção inválida!");
+            }
+
+        // ------------------ MENU ALUNO -----------------
+        } else if (logado instanceof Aluno a) {
+            switch (op) {
+                case 1 -> {
+                    System.out.println("\nSuas turmas: ");
+                    TurmaDAO.listarTurma()
+                            .stream()
+                            .filter(t -> t.getAlunos().stream()
+                                    .anyMatch(al -> al.getMatricula() == a.getMatricula()))
+                            .forEach(t -> System.out.println(t.getIdTurma() + " - " + t.getNomeTurma()));
+                }
+                case 2 -> {
+                    FrequenciaDAO dao = new FrequenciaDAO();
+                    List<Frequencia> lista = dao.listarFrequenciaAluno(a.getMatricula());
+                    if (lista.isEmpty()) {
+                        System.out.println("Nenhuma frequência encontrada!");
+                    } else {
+                        System.out.println("\n=== Suas Frequências ===");
+                        lista.forEach(f ->
+                                System.out.println(
+                                        "Turma ID: " + f.getIdTurma() +
+                                                " | Data: " + f.getDataAula() +
+                                                " | Status: " + f.getStatusPresenca()
+                                )
+                        );
+                    }
+                }
+                case 3 -> {
+                    System.out.println("Saindo...");
+                    sairMenu = true;
+                }
+                default -> System.out.println("Opção inválida!");
             }
         }
     }
+}
 
-    //--------------- SUBMENU DE ALUNOS ------------------
+    //--------------- SUBMENU DE ALUNOS (PARA COORDENADOR) ------------------
     private static void submenuAlunos(Scanner sc) {
         int op;
 
         do {
-            System.out.println("\n----- MENU ALUNOS -----");
+            System.out.println("\n----- GERENCIAR ALUNOS -----");
             System.out.println("1 - Cadastrar Alunos");
             System.out.println("2 - Listar Alunos");
             System.out.println("3 - Editar Aluno");
@@ -202,7 +222,7 @@ public class MenuPrincipalView {
         int op;
 
         do {
-            System.out.println("\n----- MENU PROFESSORES -----");
+            System.out.println("\n----- GERENCIAR PROFESSORES -----");
             System.out.println("1 - Listar Professores");
             System.out.println("2 - Editar Professor");
             System.out.println("3 - Excluir Professor");
@@ -273,7 +293,7 @@ public class MenuPrincipalView {
         int op;
 
         do {
-            System.out.println("\n----- MENU TURMAS -----");
+            System.out.println("\n----- GERENCIAR TURMAS -----");
             System.out.println("1 - Criar Turma");
             System.out.println("2 - Editar Turma");
             System.out.println("3 - Excluir Turma");
