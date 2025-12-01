@@ -7,6 +7,7 @@ import dao.AlunoDAO;
 import dao.ProfessorDAO;
 import dao.TurmaDAO;
 
+import views.FrequenciaView;
 import java.util.Scanner;
 
 public class MenuPrincipalView {
@@ -31,7 +32,8 @@ public class MenuPrincipalView {
             } else if (logado instanceof Professor) {
                 System.out.println("1. Ver Minhas Turmas");
                 System.out.println("2. Ver Turma Específica");
-                System.out.println("3. Sair");
+                System.out.println("3. Gerenciar Frequência");  // <-- ADICIONADO
+                System.out.println("4. Sair");
             } else {
                 System.out.println("Você é ALUNO. Ainda não há opções disponíveis.");
                 System.out.println("1. Sair");
@@ -60,12 +62,12 @@ public class MenuPrincipalView {
 
                 switch (op) {
                     case 1 -> {
-                            System.out.println("\nSuas turmas:");
-                            TurmaDAO.listarTurma()
-                                    .stream()
-                                    .filter(t -> t.getProfessor() != null &&
-                                                t.getProfessor().getNumeroCNDB().equals(p.getNumeroCNDB()))
-                                    .forEach(t -> System.out.println(t.getIdTurma() + " - " + t.getNomeTurma()));
+                        System.out.println("\nSuas turmas:");
+                        TurmaDAO.listarTurma()
+                                .stream()
+                                .filter(t -> t.getProfessor() != null &&
+                                        t.getProfessor().getNumeroCNDB().equals(p.getNumeroCNDB()))
+                                .forEach(t -> System.out.println(t.getIdTurma() + " - " + t.getNomeTurma()));
                     }
                     case 2 -> {
                         System.out.print("ID da turma: ");
@@ -77,6 +79,12 @@ public class MenuPrincipalView {
                     }
 
                     case 3 -> {
+                        // FREQUENCIA DO PROFESSOR
+                        
+                        FrequenciaView.gerenciarFrequencia();
+                    }
+
+                    case 4 -> {
                         System.out.println("Saindo...");
                         return;
                     }
@@ -139,7 +147,7 @@ public class MenuPrincipalView {
                     String nomeResp = sc.nextLine();
 
                     AlunoDAO.criarAluno(nome, cpf, email, senha, idUsuario, matricula, nomeResp);
-                }  
+                }
                 case 2 -> AlunoDAO.visualizarAluno();
                 case 3 -> {
                     System.out.print("Matrícula: ");
