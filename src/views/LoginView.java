@@ -5,6 +5,8 @@ import models.Aluno;
 import models.Professor;
 import models.Usuario;
 import service.UsuarioService;
+import dao.ProfessorDAO;
+import java.util.List;
 
 public class LoginView {
 
@@ -82,16 +84,26 @@ public class LoginView {
 
             service.cadastrar(new Aluno(id, nome, cpf, email, senha, mat, resp));
         }
-        else {
-            System.out.print("Número CNDB: ");
-            String cndb = sc.nextLine();
+       else {
+    System.out.print("Número CNDB: ");
+    String cndb = sc.nextLine();
 
-            System.out.print("É coordenador? (true/false): ");
-            boolean coord = sc.nextBoolean();
+    System.out.print("É coordenador? (true/false): ");
+    boolean coord = sc.nextBoolean();
+    sc.nextLine();
 
-            service.cadastrar(new Professor(id, nome, cpf, email, senha, cndb, coord));
+    if (coord) {
+        List<Professor> professores = ProfessorDAO.listarProfessor();
+        for (Professor p : professores) {
+            if (p.getCoordenador()) {
+                System.out.println("\n Já existe um coordenador cadastrado! "
+                        + "Não é possível cadastrar outro.\n");
+                return; 
+            }
         }
-
-        System.out.println("\n✔ Cadastro realizado!\n");
+    }
+    service.cadastrar(new Professor(id, nome, cpf, email, senha, cndb, coord));
+}
+    sc.close();
     }
 }
