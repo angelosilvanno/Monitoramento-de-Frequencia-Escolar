@@ -12,7 +12,6 @@ Oferecer uma forma automatizada e confiável de registrar frequência e mostrar 
 
 * Acompanhar o desempenho e a assiduidade dos alunos.
 * Registrar presença sem complicação.
-* Gerar relatórios completos da turma e de cada aluno.
 * Mostrar indicadores que ajudam na análise da frequência.
 * Dar suporte à gestão pedagógica com informações claras.
 * Permitir que cada usuário acompanhe suas próprias atividades no sistema.
@@ -49,6 +48,10 @@ Oferecer uma forma automatizada e confiável de registrar frequência e mostrar 
 Diagrama de classes:
 `https://lucid.app/lucidchart/c484e7ff-9d5e-45c5-9c5b-17d9106637d1/edit?invitationId=invf36d887c-1a8b-4ddb-8638-363a810a37b9&page=HWEp-vi-RSFO#`
 
+Tecnologias usadas:
+* ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge\&logo=openjdk\&logoColor=white)
+* ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge\&logo=mongodb\&logoColor=white)
+
 ## 👷 Autores
 
 Projeto desenvolvido pela equipe da **UFERSA – Campus Pau dos Ferros**:
@@ -57,7 +60,3 @@ Projeto desenvolvido pela equipe da **UFERSA – Campus Pau dos Ferros**:
 * João Pedro da Silva Rodrigues
 * Anailton Arthur Fernandes
 * Ângelo Silvano da Silva
-
-
-
-
