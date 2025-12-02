@@ -43,14 +43,15 @@ Oferecer uma forma automatizada e confiável de registrar frequência e mostrar 
 * Cada relatório pertence a uma turma específica.
 * Mostra a média geral da turma e a média de cada aluno.
 
-## 📦 Tecnologias
+## 📦 Tecnologias Usadas
 
-Diagrama de classes:
-`https://lucid.app/lucidchart/c484e7ff-9d5e-45c5-9c5b-17d9106637d1/edit?invitationId=invf36d887c-1a8b-4ddb-8638-363a810a37b9&page=HWEp-vi-RSFO#`
-
-Tecnologias usadas:
 * ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge\&logo=openjdk\&logoColor=white)
 * ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge\&logo=mongodb\&logoColor=white)
+
+## 🖼️ Diagrama de Classes
+
+Para facilitar a visualização da arquitetura do sistema, confira o diagrama de classes no link abaixo:
+`https://lucid.app/lucidchart/c484e7ff-9d5e-45c5-9c5b-17d9106637d1/edit?invitationId=invf36d887c-1a8b-4ddb-8638-363a810a37b9&page=HWEp-vi-RSFO#`
 
 ## 👷 Autores
 
