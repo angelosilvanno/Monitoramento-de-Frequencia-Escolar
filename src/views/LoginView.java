@@ -104,6 +104,6 @@ public class LoginView {
     }
     service.cadastrar(new Professor(id, nome, cpf, email, senha, cndb, coord));
 }
-    sc.close();
+    
     }
 }
